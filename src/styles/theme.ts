@@ -1,0 +1,63 @@
+export const theme = {
+  colors: {
+    primary: "#dff2eb",
+    secondary: "#7ab2d3",
+    background: "#b9e5e8",
+    disabled: "#c5c0db",
+    disabledLight: "#f2f8f5",
+    secondaryDarker: "#4a628a",
+    secondaryLighter: "#84b2ff",
+    textBlack: "#212121",
+    textBlue: "#4a628a",
+    textValidation: "#4a628a",
+    textSuccess: "#439f6e",
+    textError: "#f93232",
+    pink: "#f3b2b8",
+    white: "#ffffff",
+  },
+  fonts: {
+    primary: "'Nunito Sans', sans-serif",
+  },
+  fontSizes: {
+    xs: "0.75rem",
+    sm: "0.875rem",
+    base: "1rem",
+    lg: "1.125rem",
+    xl: "1.25rem",
+    "2xl": "1.5rem",
+    "3xl": "1.875rem",
+    "4xl": "2.25rem",
+    "5xl": "3rem",
+  },
+  spacing: {
+    xs: "0.25rem",
+    sm: "0.5rem",
+    md: "1rem",
+    lg: "1.5rem",
+    xl: "2rem",
+    "2xl": "3rem",
+    "3xl": "4rem",
+  },
+  borderRadius: {
+    sm: "0.25rem",
+    md: "0.5rem",
+    lg: "0.75rem",
+    xl: "1rem",
+    full: "9999px",
+  },
+  shadows: {
+    sm: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+    md: "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
+    lg: "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+    xl: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)",
+  },
+  breakpoints: {
+    sm: "640px",
+    md: "768px",
+    lg: "1024px",
+    xl: "1280px",
+    "2xl": "1536px",
+  },
+} as const;
+
+export type Theme = typeof theme;
