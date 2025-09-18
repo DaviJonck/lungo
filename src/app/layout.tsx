@@ -1,5 +1,3 @@
-"use client";
-
 import { Nunito_Sans } from "next/font/google";
 import { ThemeProvider } from "styled-components";
 import { theme } from "../styles/theme";
@@ -9,6 +7,7 @@ const nunitoSans = Nunito_Sans({
   variable: "--font-nunito-sans",
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700", "800"],
+  display: "swap",
 });
 
 export default function RootLayout({
@@ -17,12 +16,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={nunitoSans.variable}
-        style={{ backgroundColor: theme.colors.background }}
-        suppressHydrationWarning={true}
-      >
+    <html lang="pt-BR">
+      <body className={nunitoSans.variable} suppressHydrationWarning={true}>
         <ThemeProvider
           theme={{ ...theme, fontWeights: {}, lineHeights: {}, space: {} }}
         >

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import Header from "@/components/ui/Header/Header";
 import CallToAction from "@/components/callToAction/CallToAction";
@@ -19,6 +20,30 @@ const MainContent = styled.main`
 `;
 
 export default function Home() {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return (
+      <PageContainer>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "100vh",
+            backgroundColor: "#b9e5e8",
+          }}
+        >
+          <div className="loading-spinner" />
+        </div>
+      </PageContainer>
+    );
+  }
+
   return (
     <PageContainer>
       <Header />

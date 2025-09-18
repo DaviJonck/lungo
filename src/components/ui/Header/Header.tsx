@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 import LoginButton from "./LoginButton";
 
@@ -201,6 +201,11 @@ const BackgroundImage = styled(Image)`
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -269,37 +274,41 @@ const Header = () => {
         </Nav>
       </StyledHeader>
 
-      {/* Menu Mobile */}
-      <MobileMenu isOpen={isMenuOpen}>
-        <MobileMenuList>
-          <li>
-            <MobileLink href="/" onClick={closeMenu}>
-              Início
-            </MobileLink>
-          </li>
-          <li>
-            <MobileLink href="/" onClick={closeMenu}>
-              Sobre
-            </MobileLink>
-          </li>
-          <li>
-            <MobileLink href="/" onClick={closeMenu}>
-              Assinatura
-            </MobileLink>
-          </li>
-          <li>
-            <MobileLink href="/" onClick={closeMenu}>
-              Equipe
-            </MobileLink>
-          </li>
-          <li>
-            <LoginButton />
-          </li>
-        </MobileMenuList>
-      </MobileMenu>
+      {/* Menu Mobile - só renderiza após mount para evitar flash */}
+      {isMounted && (
+        <>
+          <MobileMenu isOpen={isMenuOpen}>
+            <MobileMenuList>
+              <li>
+                <MobileLink href="/" onClick={closeMenu}>
+                  Início
+                </MobileLink>
+              </li>
+              <li>
+                <MobileLink href="/" onClick={closeMenu}>
+                  Sobre
+                </MobileLink>
+              </li>
+              <li>
+                <MobileLink href="/" onClick={closeMenu}>
+                  Assinatura
+                </MobileLink>
+              </li>
+              <li>
+                <MobileLink href="/" onClick={closeMenu}>
+                  Equipe
+                </MobileLink>
+              </li>
+              <li>
+                <LoginButton />
+              </li>
+            </MobileMenuList>
+          </MobileMenu>
 
-      {/* Overlay com blur */}
-      <Overlay isOpen={isMenuOpen} onClick={closeMenu} />
+          {/* Overlay com blur */}
+          <Overlay isOpen={isMenuOpen} onClick={closeMenu} />
+        </>
+      )}
     </>
   );
 };
