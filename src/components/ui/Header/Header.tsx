@@ -75,7 +75,9 @@ const HamburgerButton = styled.button`
   }
 `;
 
-const HamburgerLine = styled.span<{ isOpen: boolean }>`
+const HamburgerLine = styled.span.withConfig({
+  shouldForwardProp: (prop) => prop !== "isOpen",
+})<{ isOpen: boolean }>`
   width: 25px;
   height: 3px;
   background-color: ${({ theme }) => theme.colors.secondaryDarker};
@@ -98,7 +100,9 @@ const HamburgerLine = styled.span<{ isOpen: boolean }>`
 `;
 
 // Menu Mobile
-const MobileMenu = styled.div<{ isOpen: boolean }>`
+const MobileMenu = styled.div.withConfig({
+  shouldForwardProp: (prop) => prop !== "isOpen",
+})<{ isOpen: boolean }>`
   position: fixed;
   top: 0;
   left: 0;
@@ -141,7 +145,9 @@ const MobileLink = styled(Link)`
 `;
 
 // Overlay com blur
-const Overlay = styled.div<{ isOpen: boolean }>`
+const Overlay = styled.div.withConfig({
+  shouldForwardProp: (prop) => prop !== "isOpen",
+})<{ isOpen: boolean }>`
   position: fixed;
   top: 0;
   left: 0;
@@ -222,8 +228,8 @@ const Header = () => {
                 style={{ marginRight: "0.5rem" }}
                 src="/Logo.svg"
                 alt="Logo"
-                width={35}
-                height={35}
+                width={45}
+                height={45}
               />
               <span style={{ fontWeight: "300" }}>Lun</span>
               <span style={{ fontWeight: "600" }}>GO</span>

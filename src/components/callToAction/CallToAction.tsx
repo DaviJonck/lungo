@@ -1,12 +1,150 @@
 import styled from "styled-components";
+import Image from "next/image";
 
-const StyledCallToAction = styled.div`
+const Section = styled.section`
   background-color: ${({ theme }) => theme.colors.background};
-  padding: ${({ theme }) => theme.spacing.md};
+  width: 100%;
+`;
+
+const Content = styled.div`
+  color: ${({ theme }) => theme.colors.secondaryDarker};
+`;
+
+const Container = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing["2xl"]};
+  padding: ${({ theme }) => theme.spacing["2xl"]};
+
+  @media (min-width: ${({ theme }) => theme.breakpoints.md}) {
+    padding: ${({ theme }) => theme.spacing["2xl"]};
+    ${({ theme }) => theme.spacing["2xl"]};
+  }
+
+  @media (min-width: ${({ theme }) => theme.breakpoints.lg}) {
+    grid-template-columns: 1.1fr 0.9fr;
+    padding: ${({ theme }) => theme.spacing["2xl"]};
+    ${({ theme }) => theme.spacing["2xl"]};
+  }
+`;
+const Title = styled.h1`
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: ${({ theme }) => theme.spacing.lg};
+  color: ${({ theme }) => theme.colors.secondaryDarker};
+  font-size: ${({ theme }) => theme.fontSizes["2xl"]};
+
+  @media (min-width: ${({ theme }) => theme.breakpoints.sm}) {
+    font-size: ${({ theme }) => theme.fontSizes["3xl"]};
+  }
+
+  @media (min-width: ${({ theme }) => theme.breakpoints.md}) {
+    font-size: ${({ theme }) => theme.fontSizes["4xl"]};
+  }
+
+  @media (min-width: ${({ theme }) => theme.breakpoints.lg}) {
+    font-size: ${({ theme }) => theme.fontSizes["5xl"]};
+  }
+`;
+
+const Description = styled.p`
+  color: ${({ theme }) => theme.colors.secondaryDarker};
+  font-size: ${({ theme }) => theme.fontSizes.base};
+  max-width: 52ch;
+  margin-bottom: ${({ theme }) => theme.spacing["2xl"]};
+  line-height: 1.6;
+
+  @media (min-width: ${({ theme }) => theme.breakpoints.sm}) {
+    font-size: ${({ theme }) => theme.fontSizes.lg};
+  }
+
+  @media (min-width: ${({ theme }) => theme.breakpoints.md}) {
+    font-size: ${({ theme }) => theme.fontSizes.xl};
+  }
+`;
+
+const CtaButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.sm};
+  background-color: ${({ theme }) => theme.colors.white};
+  color: ${({ theme }) => theme.colors.secondaryDarker};
+  padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.xl};
+  border: none;
+  border-radius: ${({ theme }) => theme.borderRadius.full};
+  box-shadow: ${({ theme }) => theme.shadows.lg};
+  cursor: pointer;
+  font-weight: 700;
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  width: 100%;
+  justify-content: center;
+
+  @media (min-width: ${({ theme }) => theme.breakpoints.sm}) {
+    width: auto;
+    font-size: ${({ theme }) => theme.fontSizes.base};
+    padding: ${({ theme }) => theme.spacing.md};
+    ${({ theme }) => theme.spacing["2xl"]};
+  }
+
+  @media (min-width: ${({ theme }) => theme.breakpoints.md}) {
+    padding: ${({ theme }) => theme.spacing.lg};
+    ${({ theme }) => theme.spacing["3xl"]};
+  }
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: ${({ theme }) => theme.shadows.xl};
+  }
+`;
+
+const Illustration = styled.div`
+  display: flex;
+  justify-content: center;
+  order: -1;
+
+  @media (min-width: ${({ theme }) => theme.breakpoints.lg}) {
+    order: 0;
+  }
 `;
 
 const CallToAction = () => {
-  return <StyledCallToAction></StyledCallToAction>;
+  return (
+    <Section>
+      <Container>
+        <Content>
+          <Title>Reabilitação Pulmonar ao seu alcance!</Title>
+          <Description>
+            Descubra uma nova qualidade de vida com LunGo, comece hoje mesmo seu
+            teste grátis!
+          </Description>
+          <CtaButton>
+            Melhorar qualidade de vida
+            <span aria-hidden>→</span>
+          </CtaButton>
+        </Content>
+
+        <Illustration>
+          <Image
+            src="/pulmao.png"
+            alt="Ilustração de pulmões em reabilitação"
+            width={520}
+            height={420}
+            priority
+            style={{
+              height: "auto",
+              width: "100%",
+              maxWidth: "100%",
+              minWidth: "280px",
+            }}
+          />
+        </Illustration>
+      </Container>
+    </Section>
+  );
 };
 
 export default CallToAction;

@@ -21,6 +21,7 @@ export default function RootLayout({
       <body
         className={nunitoSans.variable}
         style={{ backgroundColor: theme.colors.background }}
+        suppressHydrationWarning={true}
       >
         <ThemeProvider
           theme={{ ...theme, fontWeights: {}, lineHeights: {}, space: {} }}
