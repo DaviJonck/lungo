@@ -3,13 +3,36 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 import LoginButton from "./LoginButton";
-
-const StyledHeader = styled.header`
+import {
+  CircleUserRound,
+  House,
+  WalletMinimal,
+  Users,
+  Settings,
+  ShieldCheck,
+} from "lucide-react";
+const StyledHeader = styled.header.withConfig({
+  shouldForwardProp: (prop) => prop !== "isScrolled",
+})<{ isScrolled: boolean }>`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 10;
   background-color: ${({ theme }) => theme.colors.background};
-  box-shadow: ${({ theme }) => theme.shadows.sm};
+
+  backdrop-filter: ${({ isScrolled }) =>
+    isScrolled ? "saturate(180%) blur(8px)" : "none"};
+  transition: box-shadow 0.2s ease, backdrop-filter 0.2s ease;
 `;
 
-const Nav = styled.nav`
+const HeaderSpacer = styled.div`
+  height: 80px;
+`;
+
+const Nav = styled.nav.withConfig({
+  shouldForwardProp: (prop) => prop !== "isScrolled",
+})<{ isScrolled: boolean }>`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -132,16 +155,40 @@ const MobileMenuList = styled.ul`
 `;
 
 const MobileLink = styled(Link)`
-  color: ${({ theme }) => theme.colors.textBlack};
+  color: ${({ theme }) => theme.colors.secondaryDarker};
   text-decoration: none;
   font-family: ${({ theme }) => theme.fonts.primary};
   font-size: ${({ theme }) => theme.fontSizes.lg};
   font-weight: 500;
   transition: color 0.2s ease;
-
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.4rem;
+  border-radius: ${({ theme }) => theme.borderRadius.sm};
+  margin-bottom: 1rem;
   &:hover {
     color: ${({ theme }) => theme.colors.secondaryDarker};
+    background-color: ${({ theme }) => theme.colors.background};
   }
+`;
+
+const MobileLoginButton = styled.button`
+  width: 100%;
+  background-color: ${({ theme }) => theme.colors.white};
+  color: ${({ theme }) => theme.colors.secondaryDarker};
+  padding: 0.4rem;
+  border: none;
+  border-radius: ${({ theme }) => theme.borderRadius.full};
+  box-shadow: ${({ theme }) => theme.shadows.lg};
+  cursor: pointer;
+  font-weight: 700;
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.1rem;
 `;
 
 // Overlay com blur
@@ -199,12 +246,34 @@ const BackgroundImage = styled(Image)`
   }
 `;
 
+const DivisorLine = styled.div`
+  width: 100%;
+  height: 1px;
+  background-color: ${({ theme }) => theme.colors.secondaryDarker};
+  margin: ${({ theme }) => theme.spacing.xl} 0;
+`;
+
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 8) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const toggleMenu = () => {
@@ -217,8 +286,8 @@ const Header = () => {
 
   return (
     <>
-      <StyledHeader>
-        <Nav>
+      <StyledHeader isScrolled={isScrolled}>
+        <Nav isScrolled={isScrolled}>
           {/* Menu Hambúrguer - Mobile */}
           <HamburgerButton onClick={toggleMenu}>
             <HamburgerLine isOpen={isMenuOpen} />
@@ -236,8 +305,6 @@ const Header = () => {
                 width={45}
                 height={45}
               />
-              <span style={{ fontWeight: "300" }}>Lun</span>
-              <span style={{ fontWeight: "600" }}>GO</span>
             </LogoLink>
           </LogoContainer>
 
@@ -274,34 +341,61 @@ const Header = () => {
         </Nav>
       </StyledHeader>
 
+      {/* Espaço para compensar o header fixo */}
+      <HeaderSpacer />
+
       {/* Menu Mobile - só renderiza após mount para evitar flash */}
       {isMounted && (
         <>
           <MobileMenu isOpen={isMenuOpen}>
             <MobileMenuList>
-              <li>
+              <ul style={{ listStyle: "none" }}>
+                <li>
+                  <MobileLoginButton onClick={closeMenu}>
+                    <CircleUserRound />
+                    Entrar / Cadastrar
+                  </MobileLoginButton>
+                </li>
+              </ul>
+              <DivisorLine />
+              <ul style={{ listStyle: "none" }}>
+                {" "}
+                <li>
+                  <MobileLink href="/" onClick={closeMenu}>
+                    <House />
+                    Início
+                  </MobileLink>
+                </li>
+                <li>
+                  <MobileLink href="/" onClick={closeMenu}>
+                    <Users />
+                    Sobre
+                  </MobileLink>
+                </li>
+                <li>
+                  <MobileLink href="/" onClick={closeMenu}>
+                    <WalletMinimal />
+                    Assinatura
+                  </MobileLink>
+                </li>
+                <li>
+                  <MobileLink href="/" onClick={closeMenu}>
+                    <Users />
+                    Equipe
+                  </MobileLink>
+                </li>
+              </ul>
+              <DivisorLine />
+              <ul style={{ listStyle: "none" }}>
                 <MobileLink href="/" onClick={closeMenu}>
-                  Início
+                  <Settings />
+                  Configurações
                 </MobileLink>
-              </li>
-              <li>
                 <MobileLink href="/" onClick={closeMenu}>
-                  Sobre
+                  <ShieldCheck />
+                  Política de Privacidade
                 </MobileLink>
-              </li>
-              <li>
-                <MobileLink href="/" onClick={closeMenu}>
-                  Assinatura
-                </MobileLink>
-              </li>
-              <li>
-                <MobileLink href="/" onClick={closeMenu}>
-                  Equipe
-                </MobileLink>
-              </li>
-              <li>
-                <LoginButton />
-              </li>
+              </ul>
             </MobileMenuList>
           </MobileMenu>
 
