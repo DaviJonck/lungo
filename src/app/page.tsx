@@ -8,6 +8,7 @@ import WhatIsLungo from "@/components/whatIsLungo/WhatIsLungo";
 import HowItWork from "@/components/howItWork/HowItWork";
 import Pricing from "@/components/pricing/Pricing";
 import TeamSection from "@/components/team/TeamSection";
+import Footer from "@/components/ui/Footer/Footer";
 
 const PageContainer = styled.div`
   min-height: 100vh;
@@ -55,6 +56,7 @@ export default function Home() {
         <HowItWork />
         <Pricing />
         <TeamSection />
+        <Footer />
       </MainContent>
     </PageContainer>
   );
