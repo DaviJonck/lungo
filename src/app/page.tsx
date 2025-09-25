@@ -6,6 +6,8 @@ import Header from "@/components/ui/Header/Header";
 import CallToAction from "@/components/callToAction/CallToAction";
 import WhatIsLungo from "@/components/whatIsLungo/WhatIsLungo";
 import HowItWork from "@/components/howItWork/HowItWork";
+import Pricing from "@/components/pricing/Pricing";
+import TeamSection from "@/components/team/TeamSection";
 
 const PageContainer = styled.div`
   min-height: 100vh;
@@ -45,12 +47,14 @@ export default function Home() {
   }
 
   return (
-    <PageContainer>
+    <PageContainer id="topo">
       <Header />
       <MainContent>
         <CallToAction />
         <WhatIsLungo />
         <HowItWork />
+        <Pricing />
+        <TeamSection />
       </MainContent>
     </PageContainer>
   );

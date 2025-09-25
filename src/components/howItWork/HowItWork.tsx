@@ -38,9 +38,17 @@ const StepsGrid = styled.div`
   align-items: start;
   justify-items: center;
 
+  /* Empurra levemente os cards da coluna da direita (2, 4, 6) para baixo */
+  > div:nth-child(even) {
+    margin-top: 36px;
+  }
+
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
     grid-template-columns: 1fr;
     gap: ${({ theme }) => theme.spacing.xl};
+    > div:nth-child(even) {
+      margin-top: 0;
+    }
   }
 `;
 
@@ -144,7 +152,7 @@ const MagneticCard = ({
 
 const HowItWork = () => {
   return (
-    <Section>
+    <Section id="como-funciona">
       {/* Background ellipse images */}
       <EllipseImage
         src="/Ellipse 1.png"

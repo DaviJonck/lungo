@@ -192,7 +192,7 @@ const FeatureDescription = styled.p`
 
 const WhatIsLungo = () => {
   return (
-    <Section>
+    <Section id="sobre">
       <Container>
         <InfoBox position="left">
           <Info color={theme.colors.secondaryDarker} />

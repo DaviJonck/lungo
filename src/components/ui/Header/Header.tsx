@@ -19,15 +19,26 @@ const StyledHeader = styled.header.withConfig({
   left: 0;
   width: 100%;
   z-index: 10;
-  background-color: ${({ theme }) => theme.colors.background};
+  background-color: ${({ theme, isScrolled }) =>
+    isScrolled ? "rgba(185,229,232,0.86)" : theme.colors.background};
 
   backdrop-filter: ${({ isScrolled }) =>
     isScrolled ? "saturate(180%) blur(8px)" : "none"};
-  transition: box-shadow 0.2s ease, backdrop-filter 0.2s ease;
+  box-shadow: ${({ isScrolled }) =>
+    isScrolled ? "0 8px 12px -6px rgb(0 0 0 / 0.15)" : "none"};
+  border-bottom: ${({ isScrolled }) =>
+    isScrolled ? "1px solid rgba(0,0,0,0.06)" : "1px solid transparent"};
+  transform: ${({ isScrolled }) =>
+    isScrolled ? "translateY(-6px)" : "translateY(0)"};
+  transition: box-shadow 0.2s ease, backdrop-filter 0.2s ease,
+    background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 `;
 
-const HeaderSpacer = styled.div`
-  height: 80px;
+const HeaderSpacer = styled.div.withConfig({
+  shouldForwardProp: (prop) => prop !== "isScrolled",
+})<{ isScrolled: boolean }>`
+  height: ${({ isScrolled }) => (isScrolled ? "64px" : "80px")};
+  transition: height 0.2s ease;
 `;
 
 const Nav = styled.nav.withConfig({
@@ -36,22 +47,33 @@ const Nav = styled.nav.withConfig({
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: ${({ theme }) => theme.spacing.sm};
+  padding: ${({ theme, isScrolled }) =>
+    isScrolled ? `0.25rem ${theme.spacing.sm}` : theme.spacing.sm};
   width: 100%;
+  height: ${({ isScrolled }) => (isScrolled ? "64px" : "69px")};
+  transition: padding 0.2s ease, height 0.2s ease;
 `;
 
 const StyledLink = styled(Link)`
-  color: ${({ theme }) => theme.colors.white};
+  color: ${({ theme }) => theme.colors.secondaryDarker};
   text-decoration: none;
   font-family: ${({ theme }) => theme.fonts.primary};
   font-size: ${({ theme }) => theme.fontSizes.base};
   font-weight: 500;
   transition: all 0.2s ease;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+  padding: 0.35rem 0.6rem;
+  border-radius: 8px;
 
   &:hover {
-    transform: translateY(-2px);
-    transition: transform 0.2s ease;
+    background: rgba(122, 178, 211, 0.15);
+    color: ${({ theme }) => theme.colors.secondaryDarker};
+  }
+  &:focus-visible {
+    outline: 2px solid ${({ theme }) => theme.colors.secondary};
+    outline-offset: 2px;
   }
 `;
 
@@ -129,9 +151,12 @@ const MobileMenu = styled.div.withConfig({
   position: fixed;
   top: 0;
   left: 0;
-  width: 50%;
+  width: 100%;
+  max-width: 380px;
   height: 100vh;
   background-color: ${({ theme }) => theme.colors.background};
+  backdrop-filter: blur(10px) saturate(140%);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
   transform: ${({ isOpen }) =>
     isOpen ? "translateX(0)" : "translateX(-100%)"};
   transition: transform 0.3s ease;
@@ -139,6 +164,7 @@ const MobileMenu = styled.div.withConfig({
   padding: ${({ theme }) => theme.spacing.xl};
   padding-top: 80px;
   box-shadow: ${({ theme }) => theme.shadows.xl};
+  border-right: 1px solid rgba(0, 0, 0, 0.06);
 
   @media (min-width: ${({ theme }) => theme.breakpoints.md}) {
     display: none;
@@ -165,11 +191,11 @@ const MobileLink = styled(Link)`
   align-items: center;
   gap: 1rem;
   padding: 0.4rem;
-  border-radius: ${({ theme }) => theme.borderRadius.sm};
+  border-radius: ${({ theme }) => theme.borderRadius.md};
   margin-bottom: 1rem;
   &:hover {
     color: ${({ theme }) => theme.colors.secondaryDarker};
-    background-color: ${({ theme }) => theme.colors.background};
+    background-color: rgba(122, 178, 211, 0.15);
   }
 `;
 
@@ -189,6 +215,10 @@ const MobileLoginButton = styled.button`
   align-items: center;
   justify-content: center;
   gap: 0.1rem;
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: ${({ theme }) => theme.shadows.xl};
+  }
 `;
 
 // Overlay com blur
@@ -213,10 +243,15 @@ const Overlay = styled.div.withConfig({
 `;
 
 // Logo responsivo
-const LogoContainer = styled.div`
+const LogoContainer = styled.div.withConfig({
+  shouldForwardProp: (prop) => prop !== "isScrolled",
+})<{ isScrolled: boolean }>`
   display: flex;
   align-items: center;
   z-index: 10;
+  transform: ${({ isScrolled }) => (isScrolled ? "scale(0.92)" : "scale(1)")};
+  transform-origin: left center;
+  transition: transform 0.2s ease;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
     order: 2;
@@ -235,16 +270,6 @@ const DesktopNav = styled.div`
 `;
 
 // Imagem de fundo responsiva
-const BackgroundImage = styled(Image)`
-  position: absolute;
-  right: -400px;
-  top: 0;
-  z-index: 2;
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    display: none;
-  }
-`;
 
 const DivisorLine = styled.div`
   width: 100%;
@@ -276,6 +301,48 @@ const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Bloqueia o scroll quando o menu mobile estiver aberto
+  useEffect(() => {
+    if (!isMounted) return;
+    if (isMenuOpen) {
+      const scrollY = window.scrollY;
+      document.documentElement.style.overflow = "hidden";
+      document.body.style.overflow = "hidden";
+      document.body.style.position = "fixed";
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.left = "0";
+      document.body.style.right = "0";
+      document.body.style.width = "100%";
+    } else {
+      const topVal = document.body.style.top;
+      document.documentElement.style.overflow = "";
+      document.body.style.overflow = "";
+      document.body.style.position = "";
+      document.body.style.left = "";
+      document.body.style.right = "";
+      document.body.style.width = "";
+      document.body.style.top = "";
+      if (topVal) {
+        const y = parseInt(topVal || "0");
+        window.scrollTo(0, -y);
+      }
+    }
+    return () => {
+      document.documentElement.style.overflow = "";
+      document.body.style.overflow = "";
+      document.body.style.position = "";
+      document.body.style.left = "";
+      document.body.style.right = "";
+      document.body.style.width = "";
+      const topVal = document.body.style.top;
+      document.body.style.top = "";
+      if (topVal) {
+        const y = parseInt(topVal || "0");
+        window.scrollTo(0, -y);
+      }
+    };
+  }, [isMenuOpen, isMounted]);
+
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
@@ -296,7 +363,7 @@ const Header = () => {
           </HamburgerButton>
 
           {/* Logo */}
-          <LogoContainer>
+          <LogoContainer isScrolled={isScrolled}>
             <LogoLink href="/">
               <Image
                 style={{ marginRight: "0.5rem" }}
@@ -312,16 +379,16 @@ const Header = () => {
           <DesktopNav>
             <LeftNavList>
               <li>
-                <StyledLink href="/">Início</StyledLink>
+                <StyledLink href="#topo">Início</StyledLink>
               </li>
               <li>
-                <StyledLink href="/">Sobre</StyledLink>
+                <StyledLink href="#sobre">Sobre</StyledLink>
               </li>
               <li>
-                <StyledLink href="/">Assinatura</StyledLink>
+                <StyledLink href="#planos">Assinatura</StyledLink>
               </li>
               <li>
-                <StyledLink href="/">Equipe</StyledLink>
+                <StyledLink href="#equipe">Equipe</StyledLink>
               </li>
             </LeftNavList>
             <RightNavList>
@@ -332,17 +399,11 @@ const Header = () => {
           </DesktopNav>
 
           {/* Imagem de fundo */}
-          <BackgroundImage
-            src="/Vector.svg"
-            alt="Logo"
-            width={1500}
-            height={100}
-          />
         </Nav>
       </StyledHeader>
 
       {/* Espaço para compensar o header fixo */}
-      <HeaderSpacer />
+      <HeaderSpacer isScrolled={isScrolled} />
 
       {/* Menu Mobile - só renderiza após mount para evitar flash */}
       {isMounted && (
@@ -367,19 +428,25 @@ const Header = () => {
                   </MobileLink>
                 </li>
                 <li>
-                  <MobileLink href="/" onClick={closeMenu}>
+                  <MobileLink href="#topo" onClick={closeMenu}>
+                    <House />
+                    Início
+                  </MobileLink>
+                </li>
+                <li>
+                  <MobileLink href="#sobre" onClick={closeMenu}>
                     <Users />
                     Sobre
                   </MobileLink>
                 </li>
                 <li>
-                  <MobileLink href="/" onClick={closeMenu}>
+                  <MobileLink href="#planos" onClick={closeMenu}>
                     <WalletMinimal />
                     Assinatura
                   </MobileLink>
                 </li>
                 <li>
-                  <MobileLink href="/" onClick={closeMenu}>
+                  <MobileLink href="#equipe" onClick={closeMenu}>
                     <Users />
                     Equipe
                   </MobileLink>
