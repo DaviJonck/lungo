@@ -127,6 +127,7 @@ const FooterLink = styled(Link)`
   font-weight: 600;
   opacity: 0.9;
   border-radius: 8px;
+  padding: 0.25rem 0.5rem;
   &:hover {
     opacity: 1;
     background: rgba(122, 178, 211, 0.12);

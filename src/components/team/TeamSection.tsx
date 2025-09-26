@@ -9,6 +9,7 @@ const Section = styled.section`
   background: #eef7f5;
   padding: 4rem 1rem 6rem;
   overflow: hidden;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
 `;
 
 const Container = styled.div`

@@ -10,6 +10,8 @@ import {
   Users,
   Settings,
   ShieldCheck,
+  LogOut,
+  CircleX,
 } from "lucide-react";
 const StyledHeader = styled.header.withConfig({
   shouldForwardProp: (prop) => prop !== "isScrolled",
@@ -18,7 +20,7 @@ const StyledHeader = styled.header.withConfig({
   top: 0;
   left: 0;
   width: 100%;
-  z-index: 10;
+  z-index: 5;
   background-color: ${({ theme, isScrolled }) =>
     isScrolled ? "rgba(185,229,232,0.86)" : theme.colors.background};
 
@@ -152,15 +154,15 @@ const MobileMenu = styled.div.withConfig({
   top: 0;
   left: 0;
   width: 100%;
-  max-width: 380px;
+  max-width: 290px;
   height: 100vh;
-  background-color: ${({ theme }) => theme.colors.background};
+  background-color: ${({ theme }) => theme.colors.disabledLight};
   backdrop-filter: blur(10px) saturate(140%);
   -webkit-backdrop-filter: blur(10px) saturate(140%);
   transform: ${({ isOpen }) =>
     isOpen ? "translateX(0)" : "translateX(-100%)"};
   transition: transform 0.3s ease;
-  z-index: 5;
+  z-index: 20;
   padding: ${({ theme }) => theme.spacing.xl};
   padding-top: 80px;
   box-shadow: ${({ theme }) => theme.shadows.xl};
@@ -195,7 +197,7 @@ const MobileLink = styled(Link)`
   margin-bottom: 1rem;
   &:hover {
     color: ${({ theme }) => theme.colors.secondaryDarker};
-    background-color: rgba(122, 178, 211, 0.15);
+    background-color: rgba(26, 229, 243, 0.15);
   }
 `;
 
@@ -220,6 +222,66 @@ const MobileLoginButton = styled.button`
     box-shadow: ${({ theme }) => theme.shadows.xl};
   }
 `;
+const ProfileRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+`;
+const Avatar = styled(Image)`
+  border-radius: 23px;
+`;
+const ProfileInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+  margin-left: 1rem;
+`;
+const ProfileName = styled.strong`
+  color: ${({ theme }) => theme.colors.secondaryDarker};
+`;
+const ProfileAge = styled.span`
+  color: ${({ theme }) => theme.colors.textBlack};
+  opacity: 0.8;
+  font-size: 0.9rem;
+`;
+const LogoutButton = styled.button`
+  width: 100%;
+  background-color: ${({ theme }) => theme.colors.white};
+  color: ${({ theme }) => theme.colors.secondaryDarker};
+  padding: 0.5rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: ${({ theme }) => theme.borderRadius.full};
+  box-shadow: ${({ theme }) => theme.shadows.sm};
+  cursor: pointer;
+  font-weight: 700;
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  display: flex;
+  margin-top: 5rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+`;
+
+const CloseButton = styled.button`
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: ${({ theme }) => theme.colors.secondaryDarker};
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+`;
 
 // Overlay com blur
 const Overlay = styled.div.withConfig({
@@ -235,7 +297,7 @@ const Overlay = styled.div.withConfig({
   opacity: ${({ isOpen }) => (isOpen ? "1" : "0")};
   visibility: ${({ isOpen }) => (isOpen ? "visible" : "hidden")};
   transition: all 0.3s ease;
-  z-index: 4;
+  z-index: 6;
 
   @media (min-width: ${({ theme }) => theme.breakpoints.md}) {
     display: none;
@@ -282,6 +344,11 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [user, setUser] = useState<{
+    name: string;
+    age: number;
+    avatar: string;
+  } | null>(null);
 
   useEffect(() => {
     setIsMounted(true);
@@ -304,43 +371,16 @@ const Header = () => {
   // Bloqueia o scroll quando o menu mobile estiver aberto
   useEffect(() => {
     if (!isMounted) return;
+
     if (isMenuOpen) {
-      const scrollY = window.scrollY;
+      // Aplica apenas o bloqueio de scroll sem salvar posição
       document.documentElement.style.overflow = "hidden";
       document.body.style.overflow = "hidden";
-      document.body.style.position = "fixed";
-      document.body.style.top = `-${scrollY}px`;
-      document.body.style.left = "0";
-      document.body.style.right = "0";
-      document.body.style.width = "100%";
     } else {
-      const topVal = document.body.style.top;
+      // Restaura o scroll
       document.documentElement.style.overflow = "";
       document.body.style.overflow = "";
-      document.body.style.position = "";
-      document.body.style.left = "";
-      document.body.style.right = "";
-      document.body.style.width = "";
-      document.body.style.top = "";
-      if (topVal) {
-        const y = parseInt(topVal || "0");
-        window.scrollTo(0, -y);
-      }
     }
-    return () => {
-      document.documentElement.style.overflow = "";
-      document.body.style.overflow = "";
-      document.body.style.position = "";
-      document.body.style.left = "";
-      document.body.style.right = "";
-      document.body.style.width = "";
-      const topVal = document.body.style.top;
-      document.body.style.top = "";
-      if (topVal) {
-        const y = parseInt(topVal || "0");
-        window.scrollTo(0, -y);
-      }
-    };
   }, [isMenuOpen, isMounted]);
 
   const toggleMenu = () => {
@@ -409,24 +449,45 @@ const Header = () => {
       {isMounted && (
         <>
           <MobileMenu isOpen={isMenuOpen}>
+            <CloseButton onClick={closeMenu}>
+              <CircleX size={24} />
+            </CloseButton>
             <MobileMenuList>
-              <ul style={{ listStyle: "none" }}>
-                <li>
-                  <MobileLoginButton onClick={closeMenu}>
-                    <CircleUserRound />
-                    Entrar / Cadastrar
-                  </MobileLoginButton>
-                </li>
-              </ul>
+              {user ? (
+                <ProfileRow>
+                  <Avatar
+                    src={user.avatar}
+                    alt={user.name}
+                    width={66}
+                    height={66}
+                  />
+                  <ProfileInfo>
+                    <ProfileName>{user.name}</ProfileName>
+                    <ProfileAge>{user.age} anos</ProfileAge>
+                  </ProfileInfo>
+                </ProfileRow>
+              ) : (
+                <ul style={{ listStyle: "none" }}>
+                  <li>
+                    <MobileLoginButton
+                      onClick={() => {
+                        setUser({
+                          name: "Davi Jonck",
+                          age: 24,
+                          avatar: "/Davi.png",
+                        });
+                        closeMenu();
+                      }}
+                    >
+                      <CircleUserRound />
+                      Entrar / Cadastrar
+                    </MobileLoginButton>
+                  </li>
+                </ul>
+              )}
               <DivisorLine />
               <ul style={{ listStyle: "none" }}>
                 {" "}
-                <li>
-                  <MobileLink href="/" onClick={closeMenu}>
-                    <House />
-                    Início
-                  </MobileLink>
-                </li>
                 <li>
                   <MobileLink href="#topo" onClick={closeMenu}>
                     <House />
@@ -462,6 +523,18 @@ const Header = () => {
                   <ShieldCheck />
                   Política de Privacidade
                 </MobileLink>
+                {user && (
+                  <li style={{ marginTop: "0.5rem" }}>
+                    <LogoutButton
+                      onClick={() => {
+                        setUser(null);
+                        closeMenu();
+                      }}
+                    >
+                      <LogOut size={18} /> SAIR
+                    </LogoutButton>
+                  </li>
+                )}
               </ul>
             </MobileMenuList>
           </MobileMenu>
