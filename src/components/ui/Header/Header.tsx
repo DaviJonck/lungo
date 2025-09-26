@@ -156,6 +156,7 @@ const MobileMenu = styled.div.withConfig({
   width: 100%;
   max-width: 290px;
   height: 100vh;
+  max-height: 100vh;
   background-color: ${({ theme }) => theme.colors.disabledLight};
   backdrop-filter: blur(10px) saturate(140%);
   -webkit-backdrop-filter: blur(10px) saturate(140%);
@@ -163,10 +164,12 @@ const MobileMenu = styled.div.withConfig({
     isOpen ? "translateX(0)" : "translateX(-100%)"};
   transition: transform 0.3s ease;
   z-index: 20;
-  padding: ${({ theme }) => theme.spacing.xl};
-  padding-top: 80px;
+  padding: ${({ theme }) => theme.spacing.lg};
+  padding-top: 60px;
   box-shadow: ${({ theme }) => theme.shadows.xl};
   border-right: 1px solid rgba(0, 0, 0, 0.06);
+  overflow-y: auto;
+  overflow-x: hidden;
 
   @media (min-width: ${({ theme }) => theme.breakpoints.md}) {
     display: none;
@@ -179,22 +182,24 @@ const MobileMenuList = styled.ul`
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.lg};
+  gap: ${({ theme }) => theme.spacing.md};
+  height: 100%;
+  overflow-y: auto;
 `;
 
 const MobileLink = styled(Link)`
   color: ${({ theme }) => theme.colors.secondaryDarker};
   text-decoration: none;
   font-family: ${({ theme }) => theme.fonts.primary};
-  font-size: ${({ theme }) => theme.fontSizes.lg};
+  font-size: ${({ theme }) => theme.fontSizes.base};
   font-weight: 500;
   transition: color 0.2s ease;
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 0.4rem;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
   border-radius: ${({ theme }) => theme.borderRadius.md};
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
   &:hover {
     color: ${({ theme }) => theme.colors.secondaryDarker};
     background-color: rgba(26, 229, 243, 0.15);
@@ -226,7 +231,10 @@ const ProfileRow = styled.div`
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
+  padding: 0.5rem;
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+  background-color: rgba(255, 255, 255, 0.1);
 `;
 const Avatar = styled(Image)`
   border-radius: 23px;
@@ -257,7 +265,7 @@ const LogoutButton = styled.button`
   font-weight: 700;
   font-size: ${({ theme }) => theme.fontSizes.sm};
   display: flex;
-  margin-top: 5rem;
+  margin-top: 1rem;
   align-items: center;
   justify-content: center;
   gap: 0.35rem;
@@ -337,7 +345,8 @@ const DivisorLine = styled.div`
   width: 100%;
   height: 1px;
   background-color: ${({ theme }) => theme.colors.secondaryDarker};
-  margin: ${({ theme }) => theme.spacing.xl} 0;
+  margin: ${({ theme }) => theme.spacing.md} 0;
+  opacity: 0.3;
 `;
 
 const Header = () => {
