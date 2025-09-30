@@ -358,6 +358,7 @@ const Header = () => {
     age: number;
     avatar: string;
   } | null>(null);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
@@ -441,9 +442,93 @@ const Header = () => {
               </li>
             </LeftNavList>
             <RightNavList>
-              <li>
-                <LoginButton />
-              </li>
+              {!user ? (
+                <li>
+                  <LoginButton
+                    onLogin={() =>
+                      setUser({
+                        name: "Davi Jonck",
+                        age: 24,
+                        avatar: "/Davi.png",
+                      })
+                    }
+                  />
+                </li>
+              ) : (
+                <li style={{ position: "relative" }}>
+                  <button
+                    onClick={() => setIsUserMenuOpen((v) => !v)}
+                    style={{
+                      background: "transparent",
+                      border: 0,
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                      padding: 6,
+                      borderRadius: 8,
+                    }}
+                  >
+                    <Image
+                      src={user.avatar}
+                      alt={user.name}
+                      width={36}
+                      height={36}
+                      style={{ borderRadius: 18 }}
+                    />
+                  </button>
+                  {isUserMenuOpen && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        right: 0,
+                        top: 44,
+                        background: "#fff",
+                        border: "1px solid rgba(0,0,0,0.08)",
+                        borderRadius: 12,
+                        boxShadow: "0 10px 20px rgba(0,0,0,0.12)",
+                        minWidth: 200,
+                        padding: 8,
+                        zIndex: 50,
+                      }}
+                    >
+                      <Link
+                        href="/dashboard"
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 8,
+                          padding: "10px 12px",
+                          borderRadius: 10,
+                        }}
+                        onClick={() => setIsUserMenuOpen(false)}
+                      >
+                        <House size={18} /> Dashboard
+                      </Link>
+                      <button
+                        onClick={() => {
+                          setUser(null);
+                          setIsUserMenuOpen(false);
+                        }}
+                        style={{
+                          width: "100%",
+                          textAlign: "left",
+                          background: "transparent",
+                          border: 0,
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 8,
+                          padding: "10px 12px",
+                          borderRadius: 10,
+                        }}
+                      >
+                        <LogOut size={18} /> Sair
+                      </button>
+                    </div>
+                  )}
+                </li>
+              )}
             </RightNavList>
           </DesktopNav>
 
