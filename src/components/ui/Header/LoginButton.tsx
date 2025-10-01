@@ -20,12 +20,8 @@ const StyledLoginButton = styled.button`
   }
 `;
 
-type LoginButtonProps = {
-  onLogin?: () => void;
-};
-
-const LoginButton = ({ onLogin }: LoginButtonProps) => {
-  return <StyledLoginButton onClick={onLogin}>Login</StyledLoginButton>;
+const LoginButton = () => {
+  return <StyledLoginButton>Login</StyledLoginButton>;
 };
 
 export default LoginButton;

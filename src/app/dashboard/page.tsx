@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Content, DashboardContainer } from "./styles";
 import Sidebar from "./components/Sidebar";
 import DashboardHeader from "./components/DashboardHeader";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import {
   Infographics,
   RemindersAndActivities,
@@ -17,15 +18,17 @@ export default function DashboardPage() {
   });
 
   return (
-    <DashboardContainer>
-      <Sidebar />
+    <ProtectedRoute>
+      <DashboardContainer>
+        <Sidebar />
 
-      <Content>
-        <DashboardHeader user={user} setUser={setUser} />
-        <SummaryCards />
-        <RemindersAndActivities />
-        <Infographics />
-      </Content>
-    </DashboardContainer>
+        <Content>
+          <DashboardHeader user={user} setUser={setUser} />
+          <SummaryCards />
+          <RemindersAndActivities />
+          <Infographics />
+        </Content>
+      </DashboardContainer>
+    </ProtectedRoute>
   );
 }

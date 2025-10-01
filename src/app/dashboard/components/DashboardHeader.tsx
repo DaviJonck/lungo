@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   HeaderRow,
   Title,
@@ -20,6 +21,7 @@ type Props = {
 
 export default function DashboardHeader({ user, setUser }: Props) {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const { user: authUser, signOut } = useAuth();
 
   return (
     <HeaderRow>
@@ -59,18 +61,22 @@ export default function DashboardHeader({ user, setUser }: Props) {
                   Configurações
                 </Link>
                 <button
-                  onClick={() => {
+                  onClick={async () => {
+                    await signOut();
                     setUser(null);
                     setIsUserMenuOpen(false);
                   }}
                   style={{
-                    width: "100%",
-                    textAlign: "left",
-                    background: "transparent",
-                    border: 0,
-                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
                     padding: "10px 12px",
-                    borderRadius: 10,
+                    background: "transparent",
+                    border: "none",
+                    cursor: "pointer",
+                    fontWeight: 700,
+                    fontSize: "16px",
+                    fontFamily: "Nunito Sans",
                   }}
                 >
                   Sair

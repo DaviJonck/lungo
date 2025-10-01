@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import styled from "styled-components";
+import { useAuth } from "@/contexts/AuthContext";
 import LoginButton from "./LoginButton";
 import {
   CircleUserRound,
@@ -353,12 +354,8 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [user, setUser] = useState<{
-    name: string;
-    age: number;
-    avatar: string;
-  } | null>(null);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const { user, signOut } = useAuth();
 
   useEffect(() => {
     setIsMounted(true);
@@ -444,15 +441,9 @@ const Header = () => {
             <RightNavList>
               {!user ? (
                 <li>
-                  <LoginButton
-                    onLogin={() =>
-                      setUser({
-                        name: "Davi Jonck",
-                        age: 24,
-                        avatar: "/Davi.png",
-                      })
-                    }
-                  />
+                  <Link href="/auth">
+                    <LoginButton />
+                  </Link>
                 </li>
               ) : (
                 <li style={{ position: "relative" }}>
@@ -470,8 +461,10 @@ const Header = () => {
                     }}
                   >
                     <Image
-                      src={user.avatar}
-                      alt={user.name}
+                      src={user.user_metadata?.avatar_url || "/Davi.png"}
+                      alt={
+                        user.user_metadata?.full_name || user.email || "User"
+                      }
                       width={36}
                       height={36}
                       style={{ borderRadius: 18 }}
@@ -506,8 +499,8 @@ const Header = () => {
                         <House size={18} /> Dashboard
                       </Link>
                       <button
-                        onClick={() => {
-                          setUser(null);
+                        onClick={async () => {
+                          await signOut();
                           setIsUserMenuOpen(false);
                         }}
                         style={{
@@ -550,32 +543,27 @@ const Header = () => {
               {user ? (
                 <ProfileRow>
                   <Avatar
-                    src={user.avatar}
-                    alt={user.name}
+                    src={user.user_metadata?.avatar_url || "/Davi.png"}
+                    alt={user.user_metadata?.full_name || user.email || "User"}
                     width={66}
                     height={66}
                   />
                   <ProfileInfo>
-                    <ProfileName>{user.name}</ProfileName>
-                    <ProfileAge>{user.age} anos</ProfileAge>
+                    <ProfileName>
+                      {user.user_metadata?.full_name || user.email || "User"}
+                    </ProfileName>
+                    <ProfileAge>Usuário</ProfileAge>
                   </ProfileInfo>
                 </ProfileRow>
               ) : (
                 <ul style={{ listStyle: "none" }}>
                   <li>
-                    <MobileLoginButton
-                      onClick={() => {
-                        setUser({
-                          name: "Davi Jonck",
-                          age: 24,
-                          avatar: "/Davi.png",
-                        });
-                        closeMenu();
-                      }}
-                    >
-                      <CircleUserRound />
-                      Entrar / Cadastrar
-                    </MobileLoginButton>
+                    <Link href="/auth">
+                      <MobileLoginButton>
+                        <CircleUserRound />
+                        Entrar / Cadastrar
+                      </MobileLoginButton>
+                    </Link>
                   </li>
                 </ul>
               )}
@@ -620,8 +608,8 @@ const Header = () => {
                 {user && (
                   <li style={{ marginTop: "0.5rem" }}>
                     <LogoutButton
-                      onClick={() => {
-                        setUser(null);
+                      onClick={async () => {
+                        await signOut();
                         closeMenu();
                       }}
                     >

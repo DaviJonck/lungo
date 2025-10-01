@@ -1,5 +1,6 @@
 import { Nunito_Sans } from "next/font/google";
 import ThemeProvider from "../components/ThemeProvider";
+import { AuthProvider } from "../contexts/AuthContext";
 import "./globals.css";
 
 const nunitoSans = Nunito_Sans({
@@ -17,7 +18,9 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body className={nunitoSans.variable} suppressHydrationWarning={true}>
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
