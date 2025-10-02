@@ -2,7 +2,6 @@ import styled from "styled-components";
 import Link from "next/link";
 
 export const DashboardContainer = styled.div`
-  min-height: 100vh;
   width: 100%;
   display: grid;
   grid-template-columns: 260px 1fr;
@@ -38,6 +37,7 @@ export const SidebarRoot = styled.aside`
   display: flex;
   flex-direction: column;
   gap: 16px;
+  height: 95vh;
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
     display: none;
   }

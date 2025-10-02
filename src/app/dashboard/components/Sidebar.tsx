@@ -17,13 +17,16 @@ import {
   Activity,
   Settings,
   User,
+  HeartPlus,
 } from "lucide-react";
 
 export default function Sidebar() {
   return (
     <>
       <SidebarRoot>
-        <Brand>✨ LunGo</Brand>
+        <Brand>
+          <HeartPlus size={24} /> LunGo
+        </Brand>
 
         <NavSectionTitle>Menu</NavSectionTitle>
         <NavList>

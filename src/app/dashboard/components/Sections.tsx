@@ -6,30 +6,72 @@ import {
   InfoRow,
   InfoTable,
   MetricCard,
-  Motivation,
   NextExerciseCard,
   ProgressBar,
   ProgressTrack,
-  StatCard,
   TwoCol,
   HeroCard,
 } from "../styles";
 import { Heart, Wind, Activity, Cloud } from "lucide-react";
+import { UserData } from "@/hooks/useUserData";
 
-export function SummaryCards() {
+interface SectionsProps {
+  userData?: UserData | null;
+}
+
+export function SummaryCards({ userData }: SectionsProps) {
+  // Gerar saudação personalizada baseada na condição
+  const getPersonalizedGreeting = () => {
+    if (userData?.respiratory_disease) {
+      return `Como você está se sentindo hoje?`;
+    }
+    return "Como você está se sentindo hoje?";
+  };
+
+  const getConditionalMessage = () => {
+    if (userData?.respiratory_disease === "DPOC") {
+      return "Continue com seus exercícios respiratórios! 💪";
+    } else if (userData?.respiratory_disease === "Asma") {
+      return "Mantenha sua rotina de exercícios! 🌟";
+    } else if (userData?.respiratory_disease) {
+      return "Sua saúde respiratória é nossa prioridade! ❤️";
+    }
+    return "Mantenha-se ativo e saudável! 🏃‍♂️";
+  };
+
   return (
     <>
       <HeroCard>
-        <div style={{ fontSize: 22, fontWeight: 800 }}>Olá, João!</div>
-        <div style={{ opacity: 0.95 }}>Como você está se sentindo hoje?</div>
+        <div style={{ fontSize: 22, fontWeight: 800 }}>
+          Olá, {userData?.name || "Usuário"}!
+        </div>
+        <div style={{ opacity: 0.95 }}>{getPersonalizedGreeting()}</div>
+        {userData?.respiratory_disease && (
+          <div
+            style={{
+              fontSize: 14,
+              marginTop: 4,
+              color: "#f6f6f6",
+            }}
+          >
+            {getConditionalMessage()}
+          </div>
+        )}
         <div style={{ fontSize: 12, opacity: 0.95, marginTop: 8 }}>
           Progresso Semanal
         </div>
         <ProgressTrack>
-          <ProgressBar value={62} />
+          <ProgressBar
+            value={
+              userData?.progress.weekly
+                ? (userData.progress.weekly / userData.progress.total) * 100
+                : 0
+            }
+          />
         </ProgressTrack>
         <div style={{ fontSize: 12 }}>
-          3 de 5 sessões completas esta semana 🎉
+          {userData?.progress.weekly || 0} de {userData?.progress.total || 0}{" "}
+          sessões completas esta semana 🎉
         </div>
       </HeroCard>
 
@@ -83,7 +125,9 @@ export function SummaryCards() {
   );
 }
 
-export function RemindersAndActivities() {
+export function RemindersAndActivities({ userData }: SectionsProps) {
+  // userData pode ser usado para personalizar lembretes e atividades
+  console.log("User data for reminders:", userData);
   return (
     <TwoCol>
       <Card>
@@ -105,7 +149,18 @@ export function RemindersAndActivities() {
   );
 }
 
-export function Infographics() {
+export function Infographics({ userData }: SectionsProps) {
+  // Calcular IMC se temos peso e altura
+  const calculateBMI = () => {
+    if (userData?.weight && userData?.height) {
+      const bmi = userData.weight / (userData.height * userData.height);
+      return bmi.toFixed(1);
+    }
+    return null;
+  };
+
+  const bmi = calculateBMI();
+
   return (
     <>
       <GridTwoThirds>
@@ -114,20 +169,32 @@ export function Infographics() {
             Informações do Paciente
           </div>
           <InfoRow>
-            <div>Nome Completo</div>
-            <div>João Silva Santos</div>
+            <div>Idade</div>
+            <div>
+              {userData?.age ? `${userData.age} anos` : "Não informado"}
+            </div>
           </InfoRow>
           <InfoRow>
-            <div>Condição</div>
-            <div>DPOC (Doença Pulmonar Obstrutiva Crônica)</div>
+            <div>Peso</div>
+            <div>
+              {userData?.weight ? `${userData.weight} kg` : "Não informado"}
+            </div>
           </InfoRow>
           <InfoRow>
-            <div>Data do Diagnóstico</div>
-            <div>15/03/2023</div>
+            <div>Altura</div>
+            <div>
+              {userData?.height ? `${userData.height} m` : "Não informado"}
+            </div>
           </InfoRow>
+          {bmi && (
+            <InfoRow>
+              <div>IMC</div>
+              <div>{bmi} kg/m²</div>
+            </InfoRow>
+          )}
           <InfoRow>
-            <div>Tempo de Tratamento</div>
-            <div>1 ano e 10 meses</div>
+            <div>Condição Respiratória</div>
+            <div>{userData?.respiratory_disease || "Não informado"}</div>
           </InfoRow>
         </InfoTable>
         <div>
@@ -137,15 +204,11 @@ export function Infographics() {
             </div>
             <div>Hoje às 15:00</div>
             <div style={{ fontWeight: 700, marginTop: 6 }}>
-              Exercícios Respiratórios
+              {userData?.nextExercise?.title || "Exercícios Respiratórios"}
             </div>
-            <div style={{ opacity: 0.8 }}>Duração: 20 minutos</div>
-            <Motivation>
-              Frase Motivacional
-              <br />
-              &quot;Cada respiração é um passo em direção à sua
-              recuperação&quot; 💪
-            </Motivation>
+            <div style={{ opacity: 0.8 }}>
+              Duração: {userData?.nextExercise?.duration || "20 minutos"}
+            </div>
           </NextExerciseCard>
         </div>
       </GridTwoThirds>
