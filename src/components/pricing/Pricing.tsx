@@ -97,7 +97,8 @@ const Card = styled.div<{ $highlighted?: boolean }>`
   &:hover {
     box-shadow: ${({ theme }) => theme.shadows.xl};
     transform: translateY(-6px)
-      ${({ $highlighted }) => ($highlighted ? " translateY(-20px)" : "")};
+      ${({ $highlighted }) =>
+        $highlighted ? " translateY(-25px)" : "translateY(-5px)"};
     border-color: ${({ theme }) => theme.colors.secondary};
   }
 
@@ -187,11 +188,10 @@ const Actions = styled.div`
 
 const Btn = styled.button<{ variant?: "primary" | "ghost" }>`
   appearance: none;
-  border: 1px solid ${({ theme }) => theme.colors.secondary};
-  background: ${({ variant, theme }) =>
-    variant === "primary" ? theme.colors.secondary : theme.colors.white};
-  color: ${({ variant, theme }) =>
-    variant === "primary" ? theme.colors.white : theme.colors.secondary};
+  border: none;
+  background: ${({ variant }) =>
+    variant === "primary" ? "#3CD7CD" : "#87B8F8"};
+  color: white;
   font-weight: 700;
   border-radius: 999px;
   padding: 0.6rem 1rem;
@@ -202,8 +202,7 @@ const Btn = styled.button<{ variant?: "primary" | "ghost" }>`
 
   &:hover {
     box-shadow: ${({ theme }) => theme.shadows.sm};
-    background: ${({ variant, theme }) =>
-      variant === "primary" ? theme.colors.secondaryLighter : "#f7fbff"};
+    opacity: 0.8;
   }
 `;
 
@@ -212,8 +211,8 @@ const Badge = styled.div`
   top: -14px;
   left: 50%;
   transform: translateX(-50%);
-  background: ${({ theme }) => theme.colors.secondary};
-  color: ${({ theme }) => theme.colors.white};
+  background: #3cd7cd;
+  color: white;
   font-weight: 700;
   font-size: 0.85rem;
   padding: 0.35rem 0.75rem;

@@ -64,14 +64,11 @@ const Btn = styled.button<{ variant?: "primary" | "ghost" }>`
 `;
 
 const Cards = styled.div`
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1rem;
-
-  @media (min-width: ${({ theme }) => theme.breakpoints.lg}) {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.25rem;
-  }
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  width: 100%;
 `;
 
 const Card = styled.article`
@@ -175,22 +172,34 @@ export default function TeamSection() {
         </CTA>
 
         <Cards>
-          {[0, 1, 2].map((i) => (
-            <Card key={i}>
-              <Avatar src="/Davi.png" alt="Foto de Davi Jonck" />
-              <Name>Davi Jonck</Name>
-              <Role>Ceo Founder</Role>
-              <Bio>Exemplo de texto sobre o Davi e etc suas motivações</Bio>
-              <Actions>
-                <IconLink href="#" aria-label="LinkedIn">
-                  <Linkedin size={18} />
-                </IconLink>
-                <IconLink href="#" aria-label="Twitter">
-                  <X size={18} />
-                </IconLink>
-              </Actions>
-            </Card>
-          ))}
+          <Card>
+            <Avatar src="/Gustavo.jpg" alt="Foto de Davi Jonck" />
+            <Name>Gustavo Demétrio</Name>
+            <Role>Ceo Founder</Role>
+            <Bio>Exemplo de texto sobre o Gustavo e etc suas motivações</Bio>
+            <Actions>
+              <IconLink href="#" aria-label="LinkedIn">
+                <Linkedin size={18} />
+              </IconLink>
+              <IconLink href="#" aria-label="Twitter">
+                <X size={18} />
+              </IconLink>
+            </Actions>
+          </Card>
+          <Card>
+            <Avatar src="/Davi.png" alt="Foto de Davi Jonck" />
+            <Name>Davi Jonck</Name>
+            <Role>Ceo Founder</Role>
+            <Bio>Exemplo de texto sobre o Davi e etc suas motivações</Bio>
+            <Actions>
+              <IconLink href="#" aria-label="LinkedIn">
+                <Linkedin size={18} />
+              </IconLink>
+              <IconLink href="#" aria-label="Twitter">
+                <X size={18} />
+              </IconLink>
+            </Actions>
+          </Card>
         </Cards>
       </Container>
     </Section>

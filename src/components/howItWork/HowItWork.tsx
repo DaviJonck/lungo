@@ -21,13 +21,22 @@ const Title = styled.h2`
   color: ${({ theme }) => theme.colors.secondaryDarker};
   font-size: ${({ theme }) => theme.fontSizes["4xl"]};
   font-weight: 800;
-  margin-bottom: ${({ theme }) => theme.spacing["3xl"]};
+  margin-bottom: ${({ theme }) => theme.spacing.lg};
   line-height: 1.2;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
     font-size: ${({ theme }) => theme.fontSizes["3xl"]};
     text-align: center;
   }
+`;
+
+const TitleLine = styled.div`
+  width: 150px;
+  height: 4px;
+  background-color: #3cd7cd;
+  border-radius: 2px;
+  margin-bottom: 3em;
+  margin-top: -1rem;
 `;
 
 const StepsGrid = styled.div`
@@ -202,7 +211,7 @@ const HowItWork = () => {
 
       <Container>
         <Title>Como funciona o LunGo ?</Title>
-
+        <TitleLine />
         <StepsGrid>
           <MagneticCard
             stepNumber="Passo 01"

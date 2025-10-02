@@ -70,14 +70,14 @@ const CtaButton = styled.button`
   display: inline-flex;
   align-items: center;
   gap: ${({ theme }) => theme.spacing.sm};
-  background-color: ${({ theme }) => theme.colors.white};
-  color: ${({ theme }) => theme.colors.secondaryDarker};
-  padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.xl};
+  font-family: ${({ theme }) => theme.fonts.primary};
+  background-color: #3cd7cd;
+  color: ${({ theme }) => theme.colors.white};
   border: none;
-  border-radius: ${({ theme }) => theme.borderRadius.full};
+  border-radius: ${({ theme }) => theme.borderRadius.xl};
   box-shadow: ${({ theme }) => theme.shadows.lg};
   cursor: pointer;
-  font-weight: 700;
+  font-weight: 600;
   font-size: ${({ theme }) => theme.fontSizes.sm};
   transition: transform 0.15s ease, box-shadow 0.15s ease;
   width: 100%;
@@ -91,7 +91,7 @@ const CtaButton = styled.button`
   }
 
   @media (min-width: ${({ theme }) => theme.breakpoints.md}) {
-    padding: ${({ theme }) => theme.spacing.lg};
+    padding: ${({ theme }) => theme.spacing.md};
     ${({ theme }) => theme.spacing["3xl"]};
   }
 
@@ -116,10 +116,13 @@ const CallToAction = () => {
     <Section>
       <Container>
         <Content>
-          <Title>Reabilitação Pulmonar ao seu alcance!</Title>
+          <Title>
+            Reabilitação Pulmonar <br />
+            <span style={{ color: "#3CD7CD" }}>ao seu alcance!</span>
+          </Title>
           <Description>
-            Descubra uma nova qualidade de vida com LunGo, comece hoje mesmo seu
-            teste grátis!
+            Descubra como a reabilitação pulmonar com a LunGo pode transformar
+            sua vida. Começe agora seu teste grátis!
           </Description>
           <CtaButton>
             Melhorar qualidade de vida
@@ -129,13 +132,18 @@ const CallToAction = () => {
 
         <Illustration>
           <Image
-            src="/pulmao.png"
+            src="/Lunguinho.png"
             alt="Ilustração de pulmões em reabilitação"
             width={520}
             height={420}
             priority
             style={{
-              height: "auto",
+              position: "relative",
+              bottom: "0",
+              right: "0",
+              left: "0",
+              top: "0",
+              height: "100%",
               width: "100%",
               maxWidth: "100%",
               minWidth: "280px",

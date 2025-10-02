@@ -5,7 +5,7 @@ export const theme = {
     background: "#b9e5e8",
     disabled: "#c5c0db",
     disabledLight: "#f2f8f5",
-    secondaryDarker: "#4a628a",
+    secondaryDarker: "#264059",
     secondaryLighter: "#84b2ff",
     textBlack: "#212121",
     textBlue: "#4a628a",

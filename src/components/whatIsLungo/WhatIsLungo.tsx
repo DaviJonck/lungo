@@ -195,12 +195,12 @@ const WhatIsLungo = () => {
     <Section id="sobre">
       <Container>
         <InfoBox position="left">
-          <Info color={theme.colors.secondaryDarker} />
+          <Info color={"#3CD7CD"} />
           <InfoText>Descubra uma nova maneira de viver.</InfoText>
         </InfoBox>
 
         <InfoBox position="right">
-          <Info color={theme.colors.secondaryDarker} />
+          <Info color={"#3CD7CD"} />
           <InfoText>Seu melhor amigo para sua reabilitação</InfoText>
         </InfoBox>
 
@@ -211,10 +211,10 @@ const WhatIsLungo = () => {
             <TextContent>
               <Subtitle>CUIDE DE VOCÊ</Subtitle>
               <Description>
-                LunGo é uma plataforma nacional para reabilitação pulmonar e
-                automanejo de doenças respiratórias. Aqui, pacientes recebem
-                planos personalizados e profissionais têm acesso ao exclusivo
-                Método AirTrack para avaliação e acompanhamento seguro.
+                LunGoé a primeira plataforma nacional focada em reabilitação
+                pulmonar e no cuidado de doenças respiratórias. Aqui, pacientes
+                recebem planos personalizados realizados por profissionais e
+                acompanhamento da sua saúde.
               </Description>
             </TextContent>
 
@@ -233,31 +233,56 @@ const WhatIsLungo = () => {
 
           <FeaturesSection>
             <FeatureCard>
-              <ClipboardPen color={theme.colors.secondary} />
-              <FeatureTitle>Avaliação padronizada</FeatureTitle>
+              <ClipboardPen
+                color={"#3CD7CD"}
+                style={{
+                  backgroundColor: "#E6FAF8",
+                  padding: "10px",
+                  width: "50px",
+                  height: "50px",
+                  borderRadius: "30%",
+                }}
+              />
+              <FeatureTitle>Avaliação com LunGo</FeatureTitle>
               <FeatureDescription>
-                Texto aqui falando sobre a avaliação padronizada e como ele
-                funciona.
+                Avaliações seguras e baseadas em protocolos validados,
+                garantindo confiança no cuidado.
               </FeatureDescription>
             </FeatureCard>
 
             <FeatureCard>
-              <BicepsFlexed color={theme.colors.secondary} />
-              <FeatureTitle>
-                Prescrição personalizada por paciente.
-              </FeatureTitle>
+              <BicepsFlexed
+                color={"#3CD7CD"}
+                style={{
+                  backgroundColor: "#E6FAF8",
+                  padding: "10px",
+                  width: "50px",
+                  height: "50px",
+                  borderRadius: "30%",
+                }}
+              />
+              <FeatureTitle>Prescrição personalizada LunGo.</FeatureTitle>
               <FeatureDescription>
-                Texto aqui falando sobre a Prescrição personalizada por paciente
-                e como ela funciona.
+                Cada pessoa recebe um plano exclusivo, adaptado às suas
+                necessidades respiratórias específicas.
               </FeatureDescription>
             </FeatureCard>
 
             <FeatureCard>
-              <Globe color={theme.colors.secondary} />
-              <FeatureTitle>Acesso em qualquer lugar do Brasil</FeatureTitle>
+              <Globe
+                color={"#3CD7CD"}
+                style={{
+                  backgroundColor: "#E6FAF8",
+                  padding: "10px",
+                  width: "50px",
+                  height: "50px",
+                  borderRadius: "30%",
+                }}
+              />
+              <FeatureTitle>LunGo em qualquer lugar. </FeatureTitle>
               <FeatureDescription>
-                Texto aqui falando sobre o acesso em qualquer lugar do Brasil e
-                como ele funciona.
+                Cuidados sem fronteiras: Acompanhe seu tratamento e progresso de
+                onde estiver.
               </FeatureDescription>
             </FeatureCard>
           </FeaturesSection>

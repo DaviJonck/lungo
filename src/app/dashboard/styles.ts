@@ -10,8 +10,23 @@ export const DashboardContainer = styled.div`
   background-color: ${({ theme }) => theme.colors.background};
   padding: 24px;
 
+  @media (max-width: ${({ theme }) => theme.breakpoints.xl}) {
+    gap: 20px;
+    padding: 20px;
+  }
+
   @media (max-width: ${({ theme }) => theme.breakpoints.lg}) {
     grid-template-columns: 1fr;
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    gap: 16px;
+    padding: 16px;
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+    gap: 12px;
+    padding: 12px;
   }
 `;
 
@@ -23,6 +38,9 @@ export const SidebarRoot = styled.aside`
   display: flex;
   flex-direction: column;
   gap: 16px;
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    display: none;
+  }
 `;
 
 export const Brand = styled.div`
@@ -50,7 +68,9 @@ export const NavList = styled.ul`
 `;
 
 export const NavItem = styled(Link)`
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   padding: 10px 12px;
   border-radius: 10px;
   color: #1c2b2d;
@@ -62,6 +82,15 @@ export const NavItem = styled(Link)`
   &:hover {
     background: rgba(0, 0, 0, 0.04);
   }
+`;
+
+export const NavItemIcon = styled.span`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  color: #4a628a;
 `;
 
 export const ProCard = styled.div`
@@ -91,6 +120,15 @@ export const Content = styled.main`
   border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 12px;
   padding: 16px;
+  overflow: hidden;
+  margin-bottom: 5rem;
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    padding: 14px;
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+    padding: 12px;
+  }
 `;
 
 export const HeaderRow = styled.div`
@@ -98,11 +136,24 @@ export const HeaderRow = styled.div`
   align-items: center;
   justify-content: space-between;
   margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+    gap: 8px;
+  }
 `;
 
 export const Title = styled.h1`
   margin: 0;
   font-size: 22px;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    font-size: 20px;
+  }
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+    font-size: 18px;
+  }
 `;
 
 export const UserMenuWrapper = styled.div`
@@ -140,6 +191,9 @@ export const CardsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
+  @media (max-width: ${({ theme }) => theme.breakpoints.lg}) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
     grid-template-columns: 1fr;
@@ -159,6 +213,7 @@ export const TwoCol = styled.div`
   grid-template-columns: 1fr 1fr;
   gap: 12px;
   margin-bottom: 1rem;
+
   @media (max-width: ${({ theme }) => theme.breakpoints.lg}) {
     grid-template-columns: 1fr;
   }
@@ -247,6 +302,10 @@ export const InfoRow = styled.div`
   &:first-child {
     border-top: none;
   }
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
 `;
 
 export const NextExerciseCard = styled(StatCard)`
@@ -261,4 +320,34 @@ export const Motivation = styled.div`
   padding: 14px;
   text-align: center;
   font-weight: 700;
+`;
+
+// Bottom navigation (mobile)
+export const BottomNav = styled.nav`
+  display: none;
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: env(safe-area-inset-bottom, 0);
+    padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0));
+    background: #ffffffcc;
+    backdrop-filter: saturate(180%) blur(10px);
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    z-index: 60;
+  }
+`;
+
+export const BottomNavItem = styled(Link).withConfig({
+  shouldForwardProp: (prop) => prop !== "active",
+})<{ active?: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  border-radius: 10px;
+  color: ${({ active }) => (active ? "#2a7ea5" : "#4a628a")};
+  background: ${({ active }) => (active ? "#e8f3ff" : "transparent")};
 `;
