@@ -26,15 +26,20 @@ const ModalOverlay = styled.div`
   justify-content: center;
   z-index: 1000;
   padding: 20px;
+  overflow: hidden; /* evita scroll do fundo */
+  overscroll-behavior: contain; /* impede scroll da página por trás no mobile */
+  touch-action: none; /* evita scroll do body em iOS/Android */
 `;
 
 const ModalContent = styled.div`
+  position: relative;
   background: white;
   border-radius: 16px;
   width: 100%;
   max-width: 1000px;
+  height: 90vh; /* usa altura total da viewport para permitir scroll interno */
   max-height: 90vh;
-  overflow: hidden;
+  overflow: hidden; /* esconde overflow geral; painéis internos rolam */
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0;
@@ -42,6 +47,7 @@ const ModalContent = styled.div`
 
   @media (max-width: ${({ theme }) => theme.breakpoints.lg}) {
     grid-template-columns: 1fr;
+    height: 95vh;
     max-height: 95vh;
   }
 `;
@@ -52,6 +58,9 @@ const LeftPanel = styled.div`
   flex-direction: column;
   gap: 24px;
   background: #f8fafc;
+  min-height: 0; /* necessário para permitir overflow de filhos em layouts flex/grid */
+  overflow-y: auto; /* rolagem interna do painel de inputs */
+  -webkit-overflow-scrolling: touch; /* scroll suave no iOS */
 `;
 
 const RightPanel = styled.div`
@@ -60,6 +69,9 @@ const RightPanel = styled.div`
   flex-direction: column;
   gap: 24px;
   background: white;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 `;
 
 const CloseButton = styled.button`

@@ -7,25 +7,26 @@ export const DashboardContainer = styled.div`
   grid-template-columns: 260px 1fr;
   gap: 24px;
   background-color: ${({ theme }) => theme.colors.background};
-  padding: 24px;
-
+  height: 100vh; /* ocupar toda a viewport */
+  overflow: hidden; /* impedir scroll da página; rolagem será interna */
+  padding: 15px;
   @media (max-width: ${({ theme }) => theme.breakpoints.xl}) {
     gap: 20px;
-    padding: 20px;
+    height: 100vh; /* ocupar toda a viewport */
   }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.lg}) {
     grid-template-columns: 1fr;
+    height: 94vh;
+    padding: 0px;
   }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
     gap: 16px;
-    padding: 16px;
   }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
     gap: 12px;
-    padding: 12px;
   }
 `;
 
@@ -33,21 +34,15 @@ export const SidebarRoot = styled.aside`
   background: #f3fafb;
   border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 12px;
-  padding: 16px;
+  padding-inline: 16px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  height: 95vh;
-  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+  height: 100%;
+  min-height: 0; /* necessário para permitir overflow interno em layouts grid */
+  overflow-y: auto; /* rolagem interna da sidebar */
+  @media (max-width: ${({ theme }) => theme.breakpoints.lg}) {
     display: none;
   }
-`;
-
-export const Brand = styled.div`
-  display: flex;
-  align-items: center;
-  font-weight: 700;
-  font-size: 18px;
 `;
 
 export const NavSectionTitle = styled.p`
@@ -122,8 +117,14 @@ export const Content = styled.main`
   border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 12px;
   padding: 16px;
-  overflow: hidden;
-  margin-bottom: 5rem;
+  overflow: auto; /* rolagem interna do conteúdo do dashboard */
+  height: 100%;
+  min-height: 0; /* permite que o filho com overflow funcione dentro do grid */
+  margin-bottom: 0;
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    padding-bottom: 116px; /* evitar que o BottomNav cubra o fim do conteúdo */
+    border-radius: 0px;
+  }
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
     padding: 14px;
   }
@@ -227,8 +228,20 @@ export const Card = styled.div`
   border-radius: 12px;
   padding: 14px;
   min-height: 120px;
-`;
+  overflow-y: hidden;
 
+  @media screen and (max-width: ${({ theme }) => theme.breakpoints.lg}) {
+    height: 83vh;
+  }
+`;
+export const CardDashboard = styled.div`
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 12px;
+  padding: 14px;
+  min-height: 120px;
+  overflow-y: hidden;
+`;
 // New: Hero greeting card and progress
 export const HeroCard = styled.div`
   background: linear-gradient(135deg, #27c1d9 0%, #2ad1a3 100%);
@@ -327,7 +340,7 @@ export const Motivation = styled.div`
 // Bottom navigation (mobile)
 export const BottomNav = styled.nav`
   display: none;
-  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+  @media (max-width: ${({ theme }) => theme.breakpoints.lg}) {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     position: fixed;

@@ -1,5 +1,5 @@
 import {
-  Card,
+  CardDashboard,
   CardsGrid,
   GridTwoThirds,
   IconCircle,
@@ -123,37 +123,21 @@ export function RemindersAndActivities({ userData }: SectionsProps) {
             id: `i${i}1`,
             title: "Respiração diafragmática",
             duration: "8 min",
-            tasks: [
-              "Sente-se confortavelmente",
-              "Coloque uma mão no peito e outra no abdômen",
-              "Inspire pelo nariz contando até 4",
-              "Expire pela boca contando até 6",
-              "Medir frequência cardíaca a cada 2 minutos",
-            ],
+            tasks: ["Medir frequência cardíaca a cada 2 minutos"],
             dataCollectionType: "A" as const,
           },
           {
             id: `i${i}2`,
             title: "Caminhada leve",
             duration: "12 min",
-            tasks: [
-              "Caminhar em ritmo confortável",
-              "Manter postura ereta",
-              "Respirar naturalmente",
-              "Medir frequência cardíaca a cada 3 minutos",
-            ],
+            tasks: ["Medir frequência cardíaca a cada 3 minutos"],
             dataCollectionType: "A" as const,
           },
           {
             id: `i${i}3`,
             title: "Alongamento peitoral",
             duration: "5 min",
-            tasks: [
-              "Esticar os braços para trás",
-              "Manter alongamento por 30 segundos",
-              "Repetir 3 vezes",
-              "Respirar profundamente durante o alongamento",
-            ],
+            tasks: ["Respirar profundamente durante o alongamento"],
             dataCollectionType: "B" as const,
           },
           {
@@ -311,7 +295,7 @@ export function RemindersAndActivities({ userData }: SectionsProps) {
 
   return (
     <TwoCol>
-      <Card>
+      <CardDashboard>
         <div style={{ fontWeight: 700, marginBottom: 8 }}>
           Atividades do Dia
         </div>
@@ -445,14 +429,14 @@ export function RemindersAndActivities({ userData }: SectionsProps) {
           }}
           onComplete={handleCompleteExercise}
         />
-      </Card>
-      <Card>
+      </CardDashboard>
+      <CardDashboard>
         <div style={{ fontWeight: 700, marginBottom: 8 }}>Lembretes</div>
         <div style={{ opacity: 0.75, fontSize: 14 }}>Realizar Salbutamol</div>
         <div style={{ opacity: 0.75, fontSize: 14 }}>
           Realizar Predinisolona
         </div>
-      </Card>
+      </CardDashboard>
     </TwoCol>
   );
 }

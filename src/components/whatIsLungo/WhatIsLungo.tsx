@@ -221,7 +221,7 @@ const WhatIsLungo = () => {
             <IllustrationContainer>
               <Illustration>
                 <Image
-                  src="/pulmao2.png"
+                  src="/Pulmito.png"
                   alt="Ilustração de pulmões com ícones de saúde"
                   width={400}
                   height={300}

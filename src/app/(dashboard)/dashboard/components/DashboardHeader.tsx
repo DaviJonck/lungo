@@ -11,35 +11,39 @@ import {
   UserDropdown,
   UserMenuWrapper,
 } from "../styles";
-
-type User = { name: string; avatar: string } | null;
+import { useUserData } from "@/hooks/useUserData";
 
 type Props = {
-  user: User;
-  setUser: (u: User) => void;
+  title: string;
 };
 
-export default function DashboardHeader({ user, setUser }: Props) {
+export default function DashboardHeader({ title }: Props) {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const { user: authUser, signOut } = useAuth();
-
+  const { signOut } = useAuth();
+  const { userData: user, clearCache } = useUserData();
   return (
     <HeaderRow>
-      <Title>Home</Title>
+      <Title>{title}</Title>
       <UserMenuWrapper>
         {user ? (
           <>
-            <UserButton onClick={() => setIsUserMenuOpen((v) => !v)}>
+            <UserButton
+              onMouseEnter={() => setIsUserMenuOpen(true)}
+              onMouseLeave={() => setIsUserMenuOpen(false)}
+            >
               <Image
-                src={user.avatar}
-                alt={user.name}
+                src={user.avatar || "/default-avatar.png"}
+                alt={user.name || "Usuário"}
                 width={36}
                 height={36}
                 style={{ borderRadius: 18 }}
               />
             </UserButton>
             {isUserMenuOpen && (
-              <UserDropdown>
+              <UserDropdown
+                onMouseEnter={() => setIsUserMenuOpen(true)}
+                onMouseLeave={() => setIsUserMenuOpen(false)}
+              >
                 <Link
                   href="/"
                   style={{
@@ -63,7 +67,7 @@ export default function DashboardHeader({ user, setUser }: Props) {
                 <button
                   onClick={async () => {
                     await signOut();
-                    setUser(null);
+                    clearCache();
                     setIsUserMenuOpen(false);
                   }}
                   style={{
@@ -86,7 +90,7 @@ export default function DashboardHeader({ user, setUser }: Props) {
           </>
         ) : (
           <button
-            onClick={() => setUser({ name: "Davi Jonck", avatar: "/Davi.png" })}
+            onClick={() => clearCache()}
             style={{
               background: "#6cb8bf",
               color: "#fff",

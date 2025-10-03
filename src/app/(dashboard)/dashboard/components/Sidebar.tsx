@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  Brand,
   NavItem,
   NavList,
   NavSectionTitle,
@@ -12,29 +11,20 @@ import {
   BottomNavItem,
   NavItemIcon,
 } from "../styles";
-import {
-  Home,
-  NotebookPen,
-  Dumbbell,
-  Activity,
-  Book,
-  User,
-} from "lucide-react";
+import { Home, NotebookPen, Dumbbell, Book, User } from "lucide-react";
 import { usePathname } from "next/navigation";
-
 import Image from "next/image";
 
 export default function Sidebar() {
   const pathname = usePathname();
   const isHomeActive = pathname === "/dashboard" || pathname === "/";
+  const isExercisesActive = pathname?.startsWith("/dashboard/exercises");
+  const isLearningActive = pathname?.startsWith("/dashboard/learning");
 
   return (
     <>
       <SidebarRoot>
-        <Brand>
-          <Image src={"./Logo.svg"} alt="Logo" width={45} height={45} /> LunGo
-        </Brand>
-
+        <Image src="/LogoEscrita.png" alt="Logo" width={85} height={85} />
         <NavSectionTitle>Menu</NavSectionTitle>
         <NavList>
           <li>
@@ -54,7 +44,7 @@ export default function Sidebar() {
             </NavItem>
           </li>
           <li>
-            <NavItem href="#">
+            <NavItem href="/dashboard/exercises" $active={!!isExercisesActive}>
               <NavItemIcon>
                 <Dumbbell size={18} />
               </NavItemIcon>
@@ -70,7 +60,6 @@ export default function Sidebar() {
             </NavItem>
           </li>
         </NavList>
-
         {/* <NavSectionTitle>Conta</NavSectionTitle>
         <NavList>
           <li>
@@ -82,7 +71,6 @@ export default function Sidebar() {
             </NavItem>
           </li>
         </NavList> */}
-
         <ProCard>
           <div style={{ fontWeight: 700 }}>Assine a versão PRO</div>
           <div style={{ fontSize: 12, opacity: 0.8 }}>
@@ -102,11 +90,19 @@ export default function Sidebar() {
         <BottomNavItem href="#" aria-label="Diário">
           <NotebookPen size={20} />
         </BottomNavItem>
-        <BottomNavItem href="#" aria-label="Aeróbico">
-          <Activity size={20} />
-        </BottomNavItem>
-        <BottomNavItem href="#" aria-label="Força">
+        <BottomNavItem
+          href="/dashboard/exercises"
+          aria-label="Exercícios"
+          active={!!isExercisesActive}
+        >
           <Dumbbell size={20} />
+        </BottomNavItem>{" "}
+        <BottomNavItem
+          href="/dashboard/learning"
+          aria-label="Aprendendo"
+          active={!!isLearningActive}
+        >
+          <Book size={20} />
         </BottomNavItem>
         <BottomNavItem href="#" aria-label="Perfil">
           <User size={20} />
