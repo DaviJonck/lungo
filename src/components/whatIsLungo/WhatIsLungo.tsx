@@ -4,7 +4,6 @@ import { ClipboardPen } from "lucide-react";
 import { BicepsFlexed } from "lucide-react";
 import { Globe } from "lucide-react";
 import { Info } from "lucide-react";
-import { theme } from "@/styles/theme";
 
 const Section = styled.section`
   width: 100%;

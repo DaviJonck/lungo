@@ -180,7 +180,7 @@ export default function OnboardingPage() {
         <ContentSection>
           <LunguinhoContainer>
             <Image
-              src="/lunguinho.png"
+              src="/Lunguinho.png"
               alt="Lunguinho"
               width={120}
               height={120}
