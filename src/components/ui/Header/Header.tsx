@@ -414,10 +414,10 @@ const Header = () => {
             <LogoLink href="/">
               <Image
                 style={{ marginRight: "0.5rem" }}
-                src="/Logo.svg"
+                src="/LogoEscrita.png"
                 alt="Logo"
-                width={45}
-                height={45}
+                width={115}
+                height={115}
               />
             </LogoLink>
           </LogoContainer>

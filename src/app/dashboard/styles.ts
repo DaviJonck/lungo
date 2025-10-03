@@ -46,7 +46,6 @@ export const SidebarRoot = styled.aside`
 export const Brand = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
   font-weight: 700;
   font-size: 18px;
 `;
@@ -67,20 +66,23 @@ export const NavList = styled.ul`
   gap: 8px;
 `;
 
-export const NavItem = styled(Link)`
+export const NavItem = styled(Link).withConfig({
+  shouldForwardProp: (prop) => prop !== "$active",
+})<{ $active?: boolean }>`
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 10px 12px;
   border-radius: 10px;
-  color: #1c2b2d;
-  background: transparent;
+  color: ${({ $active }) => ($active ? "#1c2b2d" : "#1c2b2d")};
+  background: ${({ $active }) => ($active ? "#e8f3ff" : "transparent")};
   transition: background 0.15s ease;
   font-weight: 600;
   font-size: 14px;
 
   &:hover {
-    background: rgba(0, 0, 0, 0.04);
+    background: ${({ $active }) =>
+      $active ? "#e8f3ff" : "rgba(0, 0, 0, 0.04)"};
   }
 `;
 

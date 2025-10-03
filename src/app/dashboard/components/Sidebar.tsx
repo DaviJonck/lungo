@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Brand,
   NavItem,
@@ -15,23 +17,28 @@ import {
   NotebookPen,
   Dumbbell,
   Activity,
-  Settings,
+  Book,
   User,
-  HeartPlus,
 } from "lucide-react";
+import { usePathname } from "next/navigation";
+
+import Image from "next/image";
 
 export default function Sidebar() {
+  const pathname = usePathname();
+  const isHomeActive = pathname === "/dashboard" || pathname === "/";
+
   return (
     <>
       <SidebarRoot>
         <Brand>
-          <HeartPlus size={24} /> LunGo
+          <Image src={"./Logo.svg"} alt="Logo" width={45} height={45} /> LunGo
         </Brand>
 
         <NavSectionTitle>Menu</NavSectionTitle>
         <NavList>
           <li>
-            <NavItem href="#">
+            <NavItem href="/dashboard" $active={isHomeActive}>
               <NavItemIcon>
                 <Home size={18} />
               </NavItemIcon>
@@ -49,38 +56,22 @@ export default function Sidebar() {
           <li>
             <NavItem href="#">
               <NavItemIcon>
-                <Activity size={18} />
-              </NavItemIcon>
-              Aeróbico
-            </NavItem>
-          </li>
-          <li>
-            <NavItem href="#">
-              <NavItemIcon>
                 <Dumbbell size={18} />
               </NavItemIcon>
-              Força
+              Exercícios
             </NavItem>
           </li>
           <li>
             <NavItem href="#">
               <NavItemIcon>
-                <Settings size={18} />
+                <Book size={18} />
               </NavItemIcon>
               Aprendendo
             </NavItem>
           </li>
-          <li>
-            <NavItem href="#">
-              <NavItemIcon>
-                <Settings size={18} />
-              </NavItemIcon>
-              Estatística
-            </NavItem>
-          </li>
         </NavList>
 
-        <NavSectionTitle>Conta</NavSectionTitle>
+        {/* <NavSectionTitle>Conta</NavSectionTitle>
         <NavList>
           <li>
             <NavItem href="#">
@@ -90,7 +81,7 @@ export default function Sidebar() {
               Perfil
             </NavItem>
           </li>
-        </NavList>
+        </NavList> */}
 
         <ProCard>
           <div style={{ fontWeight: 700 }}>Assine a versão PRO</div>
@@ -101,7 +92,11 @@ export default function Sidebar() {
         </ProCard>
       </SidebarRoot>
       <BottomNav>
-        <BottomNavItem href="#" aria-label="Home" active>
+        <BottomNavItem
+          href="/dashboard"
+          aria-label="Home"
+          active={isHomeActive}
+        >
           <Home size={20} />
         </BottomNavItem>
         <BottomNavItem href="#" aria-label="Diário">
