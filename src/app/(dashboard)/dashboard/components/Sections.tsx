@@ -13,9 +13,10 @@ import {
   HeroCard,
 } from "../styles";
 import { Heart, Wind, Activity, Cloud, Play } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { UserData } from "@/hooks/useUserData";
 import ExerciseModal from "./ExerciseModal";
+import AirQualityCard from "./AirQualityCard";
 
 interface SectionsProps {
   userData?: UserData | null;
@@ -23,6 +24,62 @@ interface SectionsProps {
 
 export function SummaryCards({ userData }: SectionsProps) {
   // Gerar saudação personalizada baseada na condição
+  const [airQuality, setAirQuality] = useState<{
+    aqi: number;
+    status: string;
+    color: string;
+    description: string;
+  } | null>(null);
+
+  useEffect(() => {
+    const fetchAirQuality = async (latitude: number, longitude: number) => {
+      try {
+        const response = await fetch(
+          `/api/air-quality?lat=${latitude}&lon=${longitude}`
+        );
+        if (response.ok) {
+          const data = await response.json();
+          setAirQuality({
+            aqi: data.aqi,
+            status: data.status,
+            color: data.color,
+            description: data.description,
+          });
+        }
+      } catch (error) {
+        console.error("Erro ao buscar qualidade do ar:", error);
+      }
+    };
+
+    const getLocationAndFetchAirQuality = async () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            // Usar localização real do usuário
+            fetchAirQuality(
+              position.coords.latitude,
+              position.coords.longitude
+            );
+          },
+          (error) => {
+            console.warn("Erro ao obter localização:", error);
+            // Fallback para São Paulo se não conseguir a localização
+            fetchAirQuality(-23.5505, -46.6333);
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 300000, // 5 minutos de cache
+          }
+        );
+      } else {
+        // Fallback para São Paulo se geolocalização não estiver disponível
+        fetchAirQuality(-23.5505, -46.6333);
+      }
+    };
+
+    getLocationAndFetchAirQuality();
+  }, []);
 
   return (
     <>
@@ -87,9 +144,16 @@ export function SummaryCards({ userData }: SectionsProps) {
           </IconCircle>
           <div>
             <div style={{ fontSize: 12, opacity: 0.7 }}>Qualidade do Ar</div>
-            <div style={{ fontSize: 24, fontWeight: 800 }}>Boa</div>
-            <div style={{ fontSize: 12, color: "#2aa55f" }}>
-              Ideal para exercícios
+            <div style={{ fontSize: 24, fontWeight: 800 }}>
+              {airQuality ? airQuality.status : "Carregando..."}
+            </div>
+            <div
+              style={{
+                fontSize: 12,
+                color: airQuality ? airQuality.color : "#2aa55f",
+              }}
+            >
+              {airQuality ? `AQI: ${airQuality.aqi}` : "Ideal para exercícios"}
             </div>
           </div>
         </MetricCard>
@@ -504,6 +568,9 @@ export function Infographics({ userData }: SectionsProps) {
           </NextExerciseCard>
         </div>
       </GridTwoThirds>
+
+      {/* Card de Qualidade do Ar */}
+      <AirQualityCard />
     </>
   );
 }
