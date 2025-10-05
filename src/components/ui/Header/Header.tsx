@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useAuth } from "@/contexts/AuthContext";
+import { useUserData } from "@/hooks/useUserData";
 import LoginButton from "./LoginButton";
 import {
   CircleUserRound,
@@ -356,6 +357,7 @@ const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const { user, signOut } = useAuth();
+  const { userData } = useUserData();
 
   useEffect(() => {
     setIsMounted(true);
@@ -461,9 +463,16 @@ const Header = () => {
                     }}
                   >
                     <Image
-                      src={user.user_metadata?.avatar_url || "/Davi.png"}
+                      src={
+                        userData?.avatar ||
+                        user.user_metadata?.avatar_url ||
+                        "/default-avatar.png"
+                      }
                       alt={
-                        user.user_metadata?.full_name || user.email || "User"
+                        userData?.name ||
+                        user.user_metadata?.full_name ||
+                        user.email ||
+                        "User"
                       }
                       width={36}
                       height={36}
@@ -497,6 +506,19 @@ const Header = () => {
                         onClick={() => setIsUserMenuOpen(false)}
                       >
                         <House size={18} /> Dashboard
+                      </Link>
+                      <Link
+                        href="/dashboard/profile"
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 8,
+                          padding: "10px 12px",
+                          borderRadius: 10,
+                        }}
+                        onClick={() => setIsUserMenuOpen(false)}
+                      >
+                        <CircleUserRound size={18} /> Perfil
                       </Link>
                       <button
                         onClick={async () => {
@@ -543,16 +565,30 @@ const Header = () => {
               {user ? (
                 <ProfileRow>
                   <Avatar
-                    src={user.user_metadata?.avatar_url || "/Davi.png"}
-                    alt={user.user_metadata?.full_name || user.email || "User"}
+                    src={
+                      userData?.avatar ||
+                      user.user_metadata?.avatar_url ||
+                      "/default-avatar.png"
+                    }
+                    alt={
+                      userData?.name ||
+                      user.user_metadata?.full_name ||
+                      user.email ||
+                      "User"
+                    }
                     width={66}
                     height={66}
                   />
                   <ProfileInfo>
                     <ProfileName>
-                      {user.user_metadata?.full_name || user.email || "User"}
+                      {userData?.name ||
+                        user.user_metadata?.full_name ||
+                        user.email ||
+                        "User"}
                     </ProfileName>
-                    <ProfileAge>Usuário</ProfileAge>
+                    <ProfileAge>
+                      {userData?.age ? `${userData.age} anos` : "Usuário"}
+                    </ProfileAge>
                   </ProfileInfo>
                 </ProfileRow>
               ) : (
@@ -569,7 +605,18 @@ const Header = () => {
               )}
               <DivisorLine />
               <ul style={{ listStyle: "none" }}>
-                {" "}
+                <li>
+                  <MobileLink href="/dashboard" onClick={closeMenu}>
+                    <House />
+                    Dashboard
+                  </MobileLink>
+                </li>
+                <li>
+                  <MobileLink href="/dashboard/profile" onClick={closeMenu}>
+                    <CircleUserRound />
+                    Perfil
+                  </MobileLink>
+                </li>
                 <li>
                   <MobileLink href="#topo" onClick={closeMenu}>
                     <House />
