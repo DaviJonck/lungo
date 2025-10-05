@@ -210,7 +210,7 @@ const StatValue = styled.div`
   font-size: 1.75rem;
   font-weight: 800;
   margin-bottom: 0.25rem;
-  color: #ffffff;
+  color: #1e293b;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
@@ -222,7 +222,7 @@ const StatLabel = styled.div`
   font-size: 0.875rem;
   opacity: 0.9;
   font-weight: 500;
-  color: #f0f9ff;
+  color: #1e293b;
 `;
 
 const GamificationSection = styled.div`
@@ -552,7 +552,7 @@ const StatCard = styled.div`
   border: 1px solid rgba(59, 130, 246, 0.1);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-
+  color: #1e293b;
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
