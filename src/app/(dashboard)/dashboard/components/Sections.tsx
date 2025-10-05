@@ -328,8 +328,14 @@ export function SummaryCards({ userData }: SectionsProps) {
 }
 
 export function RemindersAndActivities({ userData }: SectionsProps) {
-  // Log userData para debug (remove warning)
-  console.log("User data in RemindersAndActivities:", userData);
+  // Log seguro apenas em desenvolvimento
+  if (process.env.NODE_ENV === "development" && userData) {
+    console.log("User data in RemindersAndActivities:", {
+      id: userData.id?.substring(0, 8) + "...",
+      name: userData.name,
+      hasAvatar: !!userData.avatar,
+    });
+  }
 
   // Pacote de exercícios definido pelo profissional
   type Exercise = {

@@ -3,16 +3,16 @@ import { createClient } from "@supabase/supabase-js";
 
 // Verificar se as variáveis de ambiente estão definidas
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseServiceKey) {
+if (!supabaseUrl || !supabaseAnonKey) {
   console.error("Variáveis de ambiente do Supabase não configuradas");
 }
 
 export async function GET(request: NextRequest) {
   try {
     // Verificar se as variáveis de ambiente estão configuradas
-    if (!supabaseUrl || !supabaseServiceKey) {
+    if (!supabaseUrl || !supabaseAnonKey) {
       console.error("Variáveis de ambiente não configuradas");
       return NextResponse.json(
         { error: "Configuração do servidor incompleta" },
@@ -32,8 +32,8 @@ export async function GET(request: NextRequest) {
 
     const token = authHeader.split(" ")[1];
 
-    // Criar cliente Supabase com o token de acesso
-    const supabaseWithToken = createClient(supabaseUrl!, supabaseServiceKey!, {
+    // Criar cliente Supabase com o token de acesso (usando anon key)
+    const supabaseWithToken = createClient(supabaseUrl!, supabaseAnonKey!, {
       global: {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -107,7 +107,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Retornar dados do perfil encontrado
-    return NextResponse.json({
+    const response = NextResponse.json({
       id: user.id,
       name:
         profile.full_name ||
@@ -147,6 +147,18 @@ export async function GET(request: NextRequest) {
         duration: "15 min",
       },
     });
+
+    // Adicionar headers de segurança
+    response.headers.set("X-Content-Type-Options", "nosniff");
+    response.headers.set("X-Frame-Options", "DENY");
+    response.headers.set("X-XSS-Protection", "1; mode=block");
+    response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+    response.headers.set(
+      "Cache-Control",
+      "private, no-cache, no-store, must-revalidate"
+    );
+
+    return response;
   } catch (error) {
     console.error("Erro no endpoint /api/user/profile:", error);
     return NextResponse.json(

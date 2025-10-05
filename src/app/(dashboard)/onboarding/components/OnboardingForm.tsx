@@ -6,6 +6,7 @@ import styled from "styled-components";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfileCompletion } from "@/hooks/useProfileCompletion";
+import { validateUserProfile, sanitizeString } from "@/lib/validation";
 
 interface OnboardingData {
   age: number;
@@ -253,18 +254,23 @@ export default function OnboardingForm() {
       return;
     }
 
-    if (formData.age < 1 || formData.age > 120) {
-      setError("Idade deve estar entre 1 e 120 anos");
-      return;
-    }
+    try {
+      // Validar dados usando schema
+      const validatedData = validateUserProfile({
+        age: formData.age,
+        weight: formData.weight,
+        height: formData.height,
+        respiratory_disease: sanitizeString(formData.respiratory_disease),
+      });
 
-    if (formData.weight < 1 || formData.weight > 500) {
-      setError("Peso deve estar entre 1 e 500 kg");
-      return;
-    }
-
-    if (formData.height < 0.5 || formData.height > 3) {
-      setError("Altura deve estar entre 0.5 e 3 metros");
+      // Atualizar formData com dados validados
+      formData.respiratory_disease = validatedData.respiratory_disease;
+    } catch (validationError) {
+      setError(
+        validationError instanceof Error
+          ? validationError.message
+          : "Dados inválidos"
+      );
       return;
     }
 

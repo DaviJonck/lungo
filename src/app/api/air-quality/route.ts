@@ -6,12 +6,31 @@ const WAQI_API_BASE_URL = "https://api.waqi.info";
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const lat = searchParams.get("lat");
-    const lon = searchParams.get("lon");
+    const latParam = searchParams.get("lat");
+    const lonParam = searchParams.get("lon");
 
-    if (!lat || !lon) {
+    if (!latParam || !lonParam) {
       return NextResponse.json(
         { error: "Latitude e longitude são obrigatórios" },
+        { status: 400 }
+      );
+    }
+
+    // Validar e converter coordenadas
+    const lat = parseFloat(latParam);
+    const lon = parseFloat(lonParam);
+
+    // Validar range das coordenadas
+    if (isNaN(lat) || isNaN(lon)) {
+      return NextResponse.json(
+        { error: "Coordenadas devem ser números válidos" },
+        { status: 400 }
+      );
+    }
+
+    if (lat < -90 || lat > 90 || lon < -180 || lon > 180) {
+      return NextResponse.json(
+        { error: "Coordenadas fora do range válido" },
         { status: 400 }
       );
     }
@@ -129,7 +148,7 @@ export async function GET(request: NextRequest) {
 
     const dominantPollutant = getDominantPollutant(iaqi);
 
-    const response = {
+    const apiResponse = {
       aqi,
       status: airQualityStatus.status,
       color: airQualityStatus.color,
@@ -140,14 +159,23 @@ export async function GET(request: NextRequest) {
       recommendations,
       location: {
         city: city?.name || "Localização não identificada",
-        latitude: parseFloat(lat),
-        longitude: parseFloat(lon),
+        latitude: lat,
+        longitude: lon,
       },
       attributions: attributions || [],
       timestamp: new Date().toISOString(),
     };
 
-    return NextResponse.json(response);
+    const response = NextResponse.json(apiResponse);
+
+    // Adicionar headers de segurança
+    response.headers.set("X-Content-Type-Options", "nosniff");
+    response.headers.set("X-Frame-Options", "DENY");
+    response.headers.set("X-XSS-Protection", "1; mode=block");
+    response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+    response.headers.set("Cache-Control", "public, max-age=300"); // Cache por 5 minutos
+
+    return response;
   } catch (error) {
     console.error("Erro ao buscar dados de qualidade do ar:", error);
     return NextResponse.json(

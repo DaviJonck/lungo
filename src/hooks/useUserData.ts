@@ -51,7 +51,13 @@ export const useUserData = () => {
       const now = Date.now();
 
       if (cachedData && now - cachedData.timestamp < CACHE_DURATION) {
-        console.log("Usando dados do cache para usuário:", user.id);
+        // Log seguro apenas em desenvolvimento
+        if (process.env.NODE_ENV === "development") {
+          console.log(
+            "Usando dados do cache para usuário:",
+            user.id.substring(0, 8) + "..."
+          );
+        }
         setUserData(cachedData.data);
         setLoading(false);
         return;
@@ -67,7 +73,13 @@ export const useUserData = () => {
         setLoading(true);
         setError(null);
 
-        console.log("Fazendo chamada à API para usuário:", user.id);
+        // Log seguro apenas em desenvolvimento
+        if (process.env.NODE_ENV === "development") {
+          console.log(
+            "Fazendo chamada à API para usuário:",
+            user.id.substring(0, 8) + "..."
+          );
+        }
 
         // Usar o access_token da sessão para autenticação
         const response = await fetch("/api/user/profile", {
@@ -140,7 +152,13 @@ export const useUserData = () => {
       setLoading(true);
       setError(null);
 
-      console.log("Forçando atualização dos dados para usuário:", user.id);
+      // Log seguro apenas em desenvolvimento
+      if (process.env.NODE_ENV === "development") {
+        console.log(
+          "Forçando atualização dos dados para usuário:",
+          user.id.substring(0, 8) + "..."
+        );
+      }
 
       const response = await fetch("/api/user/profile", {
         method: "GET",
