@@ -16,6 +16,172 @@ import { Heart, Wind, Activity, Cloud, Play } from "lucide-react";
 import { useMemo, useState, useEffect } from "react";
 import { UserData } from "@/hooks/useUserData";
 import ExerciseModal from "./ExerciseModal";
+import styled from "styled-components";
+
+// Styled Components
+const SectionTitle = styled.div`
+  font-weight: 800;
+  font-size: 18px;
+  margin-bottom: 16px;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+const InfoBanner = styled.div`
+  opacity: 0.8;
+  font-size: 14px;
+  margin-bottom: 20px;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border-radius: 12px;
+  border: 1px solid #bae6fd;
+`;
+
+const ExerciseCard = styled.div<{ $completed: boolean }>`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px 20px;
+  background: ${({ $completed }) =>
+    $completed
+      ? "linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)"
+      : "linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)"};
+  box-shadow: ${({ $completed }) =>
+    $completed
+      ? "0 2px 8px rgba(34, 197, 94, 0.1)"
+      : "0 2px 4px rgba(0, 0, 0, 0.05)"};
+  transition: all 0.2s ease;
+  border-color: ${({ $completed }) => ($completed ? "#22c55e" : "#e2e8f0")};
+`;
+
+const ExerciseContent = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+`;
+
+const ExerciseNumber = styled.div<{ $completed: boolean }>`
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: ${({ $completed }) =>
+    $completed
+      ? "linear-gradient(135deg, #22c55e 0%, #16a34a 100%)"
+      : "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)"};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+`;
+
+const ExerciseInfo = styled.div`
+  flex: 1;
+`;
+
+const ExerciseTitle = styled.div<{ $completed: boolean }>`
+  font-weight: 600;
+  font-size: 15px;
+  color: ${({ $completed }) => ($completed ? "#059669" : "#1e293b")};
+  margin-bottom: 4px;
+`;
+
+const ExerciseDetails = styled.div`
+  font-size: 13px;
+  opacity: 0.7;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+const ExerciseButton = styled.button<{ $completed: boolean }>`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  background: ${({ $completed }) =>
+    $completed
+      ? "linear-gradient(135deg, #22c55e 0%, #16a34a 100%)"
+      : "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)"};
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: ${({ $completed }) => ($completed ? "default" : "pointer")};
+  opacity: ${({ $completed }) => ($completed ? 0.9 : 1)};
+  transition: all 0.2s ease;
+  box-shadow: ${({ $completed }) =>
+    $completed
+      ? "0 2px 6px rgba(34, 197, 94, 0.2)"
+      : "0 2px 6px rgba(59, 130, 246, 0.2)"};
+  min-width: 100px;
+  justify-content: center;
+
+  &:hover {
+    transform: ${({ $completed }) =>
+      $completed ? "none" : "translateY(-1px)"};
+    box-shadow: ${({ $completed }) =>
+      $completed
+        ? "0 2px 6px rgba(34, 197, 94, 0.2)"
+        : "0 4px 12px rgba(59, 130, 246, 0.3)"};
+  }
+`;
+
+const ReminderCard = styled.div`
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-radius: 12px;
+  border: 1px solid #f59e0b;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+`;
+
+const ReminderDot = styled.div`
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #f59e0b;
+`;
+
+const ReminderText = styled.div`
+  font-size: 14px;
+  font-weight: 600;
+  color: #92400e;
+`;
+
+const Toast = styled.div`
+  position: fixed;
+  right: 20px;
+  top: 20px;
+  background: #16a34a;
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 8px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+  font-weight: 700;
+`;
+
+const ExerciseContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+`;
+
+const ReminderContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+`;
 
 interface SectionsProps {
   userData?: UserData | null;
@@ -165,7 +331,7 @@ export function RemindersAndActivities({ userData }: SectionsProps) {
   // Log userData para debug (remove warning)
   console.log("User data in RemindersAndActivities:", userData);
 
-  // Planos mockados (Iniciante, Médio, Avançado)
+  // Pacote de exercícios definido pelo profissional
   type Exercise = {
     id: string;
     title: string;
@@ -174,172 +340,68 @@ export function RemindersAndActivities({ userData }: SectionsProps) {
     videoUrl?: string;
     dataCollectionType: "A" | "B" | "C";
   };
-  type DayPlan = Exercise[];
-  type Plan = { name: "Iniciante" | "Médio" | "Avançado"; week: DayPlan[] };
 
-  const plans: Plan[] = useMemo(
+  // Pacote de exercícios do dia (3-5 exercícios por paciente)
+  const todayExercises: Exercise[] = useMemo(
     () => [
       {
-        name: "Iniciante",
-        week: Array.from({ length: 7 }).map((_d, i) => [
-          {
-            id: `i${i}1`,
-            title: "Respiração diafragmática",
-            duration: "8 min",
-            tasks: ["Medir frequência cardíaca a cada 2 minutos"],
-            dataCollectionType: "A" as const,
-          },
-          {
-            id: `i${i}2`,
-            title: "Caminhada leve",
-            duration: "12 min",
-            tasks: ["Medir frequência cardíaca a cada 3 minutos"],
-            dataCollectionType: "A" as const,
-          },
-          {
-            id: `i${i}3`,
-            title: "Alongamento peitoral",
-            duration: "5 min",
-            tasks: ["Respirar profundamente durante o alongamento"],
-            dataCollectionType: "B" as const,
-          },
-          {
-            id: `i${i}4`,
-            title: "Hidratação",
-            duration: "1 copo",
-            tasks: [
-              "Beber 1 copo de água",
-              "Anotar a quantidade ingerida",
-              "Verificar se há sede excessiva",
-            ],
-            dataCollectionType: "B" as const,
-          },
-        ]),
+        id: "daily-exercise-1",
+        title: "Respiração Diafragmática",
+        duration: "8 min",
+        tasks: [
+          "Sentar confortavelmente",
+          "Inspirar pelo nariz contando até 4",
+          "Expirar pela boca contando até 6",
+          "Medir frequência cardíaca inicial",
+        ],
+        dataCollectionType: "A" as const,
       },
       {
-        name: "Médio",
-        week: Array.from({ length: 7 }).map((_d, i) => [
-          {
-            id: `m${i}1`,
-            title: "Respiração com lábios semicerrados",
-            duration: "10 min",
-            tasks: [
-              "Inspirar pelo nariz por 2 segundos",
-              "Expirar pelos lábios semicerrados por 4 segundos",
-              "Manter ritmo constante",
-              "Medir frequência cardíaca a cada 2 minutos",
-              "Verificar saturação de oxigênio",
-            ],
-            dataCollectionType: "A" as const,
-          },
-          {
-            id: `m${i}2`,
-            title: "Caminhada moderada",
-            duration: "18 min",
-            tasks: [
-              "Caminhar em ritmo moderado",
-              "Manter frequência cardíaca entre 100-120 bpm",
-              "Medir frequência cardíaca a cada 3 minutos",
-              "Verificar saturação de oxigênio",
-            ],
-            dataCollectionType: "A" as const,
-          },
-          {
-            id: `m${i}3`,
-            title: "Fortalecimento tronco",
-            duration: "8 min",
-            tasks: [
-              "Exercícios de fortalecimento do core",
-              "Manter postura correta",
-              "Respirar durante os exercícios",
-              "Medir frequência cardíaca",
-            ],
-            dataCollectionType: "B" as const,
-          },
-          {
-            id: `m${i}4`,
-            title: "Alongamento",
-            duration: "5 min",
-            tasks: [
-              "Alongar todos os grupos musculares",
-              "Manter cada posição por 30 segundos",
-              "Respirar profundamente",
-              "Anotar sensações",
-            ],
-            dataCollectionType: "B" as const,
-          },
-        ]),
+        id: "daily-exercise-2",
+        title: "Caminhada Leve",
+        duration: "12 min",
+        tasks: [
+          "Caminhar em ritmo confortável",
+          "Manter respiração controlada",
+          "Medir frequência cardíaca a cada 3 minutos",
+          "Anotar sensações de cansaço",
+        ],
+        dataCollectionType: "A" as const,
       },
       {
-        name: "Avançado",
-        week: Array.from({ length: 7 }).map((_d, i) => [
-          {
-            id: `a${i}1`,
-            title: "Respiração controlada",
-            duration: "12 min",
-            tasks: [
-              "Técnica de respiração avançada",
-              "Controle total do ritmo respiratório",
-              "Medir frequência cardíaca a cada 2 minutos",
-              "Verificar saturação de oxigênio",
-              "Anotar pressão arterial",
-            ],
-            dataCollectionType: "A" as const,
-          },
-          {
-            id: `a${i}2`,
-            title: "Caminhada rápida",
-            duration: "25 min",
-            tasks: [
-              "Caminhar em ritmo acelerado",
-              "Manter frequência cardíaca entre 120-140 bpm",
-              "Medir frequência cardíaca a cada 3 minutos",
-              "Verificar saturação de oxigênio",
-              "Anotar pressão arterial",
-            ],
-            dataCollectionType: "C" as const,
-          },
-          {
-            id: `a${i}3`,
-            title: "Circuito funcional",
-            duration: "10 min",
-            tasks: [
-              "Exercícios funcionais variados",
-              "Manter intensidade moderada-alta",
-              "Medir frequência cardíaca a cada 2 minutos",
-              "Verificar saturação de oxigênio",
-              "Anotar pressão arterial",
-            ],
-            dataCollectionType: "A" as const,
-          },
-          {
-            id: `a${i}4`,
-            title: "Alongamento avançado",
-            duration: "6 min",
-            tasks: [
-              "Alongamentos profundos",
-              "Técnicas de relaxamento",
-              "Respiração controlada",
-              "Anotar sensações e bem-estar",
-            ],
-            dataCollectionType: "B" as const,
-          },
-        ]),
+        id: "daily-exercise-3",
+        title: "Alongamento Peitoral",
+        duration: "5 min",
+        tasks: [
+          "Alongar músculos do peito",
+          "Manter cada posição por 30 segundos",
+          "Respirar profundamente",
+          "Relaxar entre os movimentos",
+        ],
+        dataCollectionType: "A" as const,
+      },
+      {
+        id: "daily-exercise-4",
+        title: "Exercício de Relaxamento",
+        duration: "7 min",
+        tasks: [
+          "Deitar ou sentar confortavelmente",
+          "Fechar os olhos e relaxar",
+          "Focar na respiração lenta",
+          "Anotar sensações de bem-estar",
+        ],
+        dataCollectionType: "A" as const,
       },
     ],
     []
   );
 
-  const [selectedPlanIndex, setSelectedPlanIndex] = useState(0);
   const [completed, setCompleted] = useState<Record<string, boolean>>({});
   const [toast, setToast] = useState<string | null>(null);
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(
     null
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const todayIndex = useMemo(() => new Date().getDay() % 7, []);
-  const todayExercises = plans[selectedPlanIndex].week[todayIndex];
 
   const handleStartExercise = (exercise: Exercise) => {
     setSelectedExercise(exercise);
@@ -359,129 +421,43 @@ export function RemindersAndActivities({ userData }: SectionsProps) {
   return (
     <TwoCol>
       <CardDashboard>
-        <div style={{ fontWeight: 700, marginBottom: 8 }}>
-          Atividades do Dia
-        </div>
+        <SectionTitle>🏃‍♂️ Atividade do Dia</SectionTitle>
 
-        <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
-          {plans.map((p, idx) => (
-            <button
-              key={p.name}
-              onClick={() => setSelectedPlanIndex(idx)}
-              style={{
-                padding: "6px 10px",
-                borderRadius: 8,
-                border: "1px solid #e5e7eb",
-                background: idx === selectedPlanIndex ? "#e0f2fe" : "#fff",
-                color: "#075985",
-                fontWeight: 600,
-                cursor: "pointer",
-              }}
-            >
-              {p.name}
-            </button>
-          ))}
-        </div>
+        <InfoBanner>
+          Pacote de exercícios personalizado definido pelo seu profissional
+        </InfoBanner>
 
-        <div style={{ opacity: 0.7, fontSize: 12, marginBottom: 8 }}>
-          Plano: {plans[selectedPlanIndex].name} • Dia {todayIndex + 1}
-        </div>
-
-        <ul
-          style={{
-            listStyle: "none",
-            padding: 0,
-            margin: 0,
-            display: "grid",
-            gap: 10,
-          }}
-        >
-          {todayExercises.map((ex) => (
-            <li
-              key={ex.id}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                border: "1px solid #e5e7eb",
-                borderRadius: 10,
-                padding: "10px 12px",
-                background: completed[ex.id] ? "#f0f9ff" : "#fff",
-              }}
-            >
-              <div>
-                <div
-                  style={{
-                    fontWeight: 700,
-                    color: completed[ex.id] ? "#059669" : "#1c2b2d",
-                  }}
-                >
-                  {ex.title}
-                </div>
-                <div style={{ fontSize: 12, opacity: 0.75 }}>
-                  Duração: {ex.duration}
-                </div>
-              </div>
-              <button
-                onClick={() => handleStartExercise(ex)}
-                disabled={completed[ex.id]}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 8,
-                  padding: "8px 16px",
-                  borderRadius: 8,
-                  border: "none",
-                  background: completed[ex.id]
-                    ? "#10b981"
-                    : "linear-gradient(135deg, #2a7ea5 0%, #1ea1a1 100%)",
-                  color: "white",
-                  fontSize: 14,
-                  fontWeight: 600,
-                  cursor: completed[ex.id] ? "default" : "pointer",
-                  opacity: completed[ex.id] ? 0.8 : 1,
-                  transition: "all 0.2s ease",
-                }}
-                onMouseEnter={(e) => {
-                  if (!completed[ex.id]) {
-                    e.currentTarget.style.transform = "translateY(-1px)";
-                    e.currentTarget.style.boxShadow =
-                      "0 4px 12px rgba(42, 126, 165, 0.3)";
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!completed[ex.id]) {
-                    e.currentTarget.style.transform = "translateY(0)";
-                    e.currentTarget.style.boxShadow = "none";
-                  }
-                }}
+        <ExerciseContainer>
+          {todayExercises.map((exercise, index) => (
+            <ExerciseCard key={exercise.id} $completed={completed[exercise.id]}>
+              <ExerciseContent>
+                <ExerciseNumber $completed={completed[exercise.id]}>
+                  {completed[exercise.id] ? "✓" : index + 1}
+                </ExerciseNumber>
+                <ExerciseInfo>
+                  <ExerciseTitle $completed={completed[exercise.id]}>
+                    {exercise.title}
+                  </ExerciseTitle>
+                  <ExerciseDetails>
+                    <span>⏱️ {exercise.duration}</span>
+                    <span>•</span>
+                    <span>📋 {exercise.tasks.length} tarefas</span>
+                  </ExerciseDetails>
+                </ExerciseInfo>
+              </ExerciseContent>
+              <ExerciseButton
+                onClick={() => handleStartExercise(exercise)}
+                disabled={completed[exercise.id]}
+                $completed={completed[exercise.id]}
               >
-                <Play size={16} />
-                {completed[ex.id] ? "Concluído" : "Iniciar"}
-              </button>
-            </li>
+                <Play size={14} />
+                {completed[exercise.id] ? "Concluído" : "Iniciar"}
+              </ExerciseButton>
+            </ExerciseCard>
           ))}
-        </ul>
+        </ExerciseContainer>
 
-        {toast && (
-          <div
-            aria-live="polite"
-            style={{
-              position: "fixed",
-              right: 20,
-              top: 20,
-              background: "#16a34a",
-              color: "#fff",
-              padding: "10px 14px",
-              borderRadius: 8,
-              boxShadow: "0 10px 20px rgba(0,0,0,0.15)",
-              zIndex: 100,
-              fontWeight: 700,
-            }}
-          >
-            {toast}
-          </div>
-        )}
+        {toast && <Toast aria-live="polite">{toast}</Toast>}
 
         <ExerciseModal
           exercise={selectedExercise}
@@ -494,11 +470,19 @@ export function RemindersAndActivities({ userData }: SectionsProps) {
         />
       </CardDashboard>
       <CardDashboard>
-        <div style={{ fontWeight: 700, marginBottom: 8 }}>Lembretes</div>
-        <div style={{ opacity: 0.75, fontSize: 14 }}>Realizar Salbutamol</div>
-        <div style={{ opacity: 0.75, fontSize: 14 }}>
-          Realizar Predinisolona
-        </div>
+        <SectionTitle>💊 Lembretes</SectionTitle>
+
+        <ReminderContainer>
+          <ReminderCard>
+            <ReminderDot />
+            <ReminderText>Realizar Salbutamol</ReminderText>
+          </ReminderCard>
+
+          <ReminderCard>
+            <ReminderDot />
+            <ReminderText>Realizar Predinisolona</ReminderText>
+          </ReminderCard>
+        </ReminderContainer>
       </CardDashboard>
     </TwoCol>
   );

@@ -92,24 +92,48 @@ export const NavItemIcon = styled.span`
 
 export const ProCard = styled.div`
   margin-top: auto;
-  background: white;
-  border: 1px dashed rgba(0, 0, 0, 0.12);
-  border-radius: 14px;
-  padding: 16px;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 18px;
   text-align: center;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  position: relative;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+      0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
 `;
 
 export const ProButton = styled.button`
-  background: #6cb8bf;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
   color: white;
   border: none;
-  border-radius: 10px;
-  padding: 10px 12px;
-  font-weight: 700;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-weight: 600;
+  font-size: 14px;
   cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+
+  &:hover {
+    background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+  }
 `;
 
 export const Content = styled.main`
@@ -229,10 +253,6 @@ export const Card = styled.div`
   padding: 14px;
   min-height: 120px;
   overflow-y: hidden;
-
-  @media screen and (max-width: ${({ theme }) => theme.breakpoints.lg}) {
-    height: 83vh;
-  }
 `;
 export const CardDashboard = styled.div`
   background: white;

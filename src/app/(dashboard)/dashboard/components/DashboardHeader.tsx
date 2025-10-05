@@ -12,6 +12,7 @@ import {
   UserMenuWrapper,
 } from "../styles";
 import { useUserData } from "@/hooks/useUserData";
+import { Home, Settings, LogOut } from "lucide-react";
 
 type Props = {
   title: string;
@@ -47,21 +48,47 @@ export default function DashboardHeader({ title }: Props) {
                 <Link
                   href="/"
                   style={{
-                    display: "block",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
                     padding: "10px 12px",
                     borderRadius: 10,
+                    textDecoration: "none",
+                    color: "#1e293b",
+                    fontWeight: 500,
+                    transition: "background-color 0.2s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = "#f1f5f9";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "transparent";
                   }}
                 >
+                  <Home size={16} />
                   Home
                 </Link>
                 <Link
                   href="/settings"
                   style={{
-                    display: "block",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
                     padding: "10px 12px",
                     borderRadius: 10,
+                    textDecoration: "none",
+                    color: "#1e293b",
+                    fontWeight: 500,
+                    transition: "background-color 0.2s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = "#f1f5f9";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "transparent";
                   }}
                 >
+                  <Settings size={16} />
                   Configurações
                 </Link>
                 <button
@@ -79,11 +106,23 @@ export default function DashboardHeader({ title }: Props) {
                     background: "transparent",
                     border: "none",
                     cursor: "pointer",
-                    fontWeight: 700,
+                    fontWeight: 500,
                     fontSize: "16px",
                     fontFamily: "Nunito Sans",
+                    color: "#dc2626",
+                    transition: "background-color 0.2s ease",
+                    width: "100%",
+                    textAlign: "left",
+                    borderRadius: 10,
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = "#fef2f2";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "transparent";
                   }}
                 >
+                  <LogOut size={16} />
                   Sair
                 </button>
               </UserDropdown>

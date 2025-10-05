@@ -18,8 +18,10 @@ import Image from "next/image";
 export default function Sidebar() {
   const pathname = usePathname();
   const isHomeActive = pathname === "/dashboard" || pathname === "/";
+  const isDiaryActive = pathname?.startsWith("/dashboard/diary");
   const isExercisesActive = pathname?.startsWith("/dashboard/exercises");
   const isLearningActive = pathname?.startsWith("/dashboard/learning");
+  const isProfileActive = pathname?.startsWith("/dashboard/profile");
 
   return (
     <>
@@ -36,7 +38,7 @@ export default function Sidebar() {
             </NavItem>
           </li>
           <li>
-            <NavItem href="#">
+            <NavItem href="/dashboard/diary" $active={!!isDiaryActive}>
               <NavItemIcon>
                 <NotebookPen size={18} />
               </NavItemIcon>
@@ -60,23 +62,39 @@ export default function Sidebar() {
             </NavItem>
           </li>
         </NavList>
-        {/* <NavSectionTitle>Conta</NavSectionTitle>
+        <NavSectionTitle>Conta</NavSectionTitle>
         <NavList>
           <li>
-            <NavItem href="#">
+            <NavItem href="/dashboard/profile" $active={!!isProfileActive}>
               <NavItemIcon>
                 <User size={18} />
               </NavItemIcon>
               Perfil
             </NavItem>
           </li>
-        </NavList> */}
+        </NavList>
         <ProCard>
-          <div style={{ fontWeight: 700 }}>Assine a versão PRO</div>
-          <div style={{ fontSize: 12, opacity: 0.8 }}>
-            para todos os recursos.
+          <div
+            style={{
+              fontWeight: 600,
+              fontSize: "15px",
+              color: "#1e293b",
+              marginBottom: "4px",
+            }}
+          >
+            🚀 Upgrade para PRO
           </div>
-          <ProButton>Assine</ProButton>
+          <div
+            style={{
+              fontSize: "12px",
+              color: "#64748b",
+              lineHeight: "1.4",
+              marginBottom: "12px",
+            }}
+          >
+            Acesso completo a todos os recursos
+          </div>
+          <ProButton>Assinar Agora</ProButton>
         </ProCard>
       </SidebarRoot>
       <BottomNav>
@@ -87,7 +105,11 @@ export default function Sidebar() {
         >
           <Home size={20} />
         </BottomNavItem>
-        <BottomNavItem href="#" aria-label="Diário">
+        <BottomNavItem
+          href="/dashboard/diary"
+          aria-label="Diário"
+          active={!!isDiaryActive}
+        >
           <NotebookPen size={20} />
         </BottomNavItem>
         <BottomNavItem
@@ -104,7 +126,11 @@ export default function Sidebar() {
         >
           <Book size={20} />
         </BottomNavItem>
-        <BottomNavItem href="#" aria-label="Perfil">
+        <BottomNavItem
+          href="/dashboard/profile"
+          aria-label="Perfil"
+          active={!!isProfileActive}
+        >
           <User size={20} />
         </BottomNavItem>
       </BottomNav>
