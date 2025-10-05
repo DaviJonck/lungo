@@ -69,6 +69,7 @@ const Cards = styled.div`
   flex-wrap: wrap;
   justify-content: space-between;
   width: 100%;
+  gap: 2rem;
 `;
 
 const Card = styled.article`
@@ -94,7 +95,6 @@ const Avatar = styled.img`
   object-fit: cover;
   display: block;
   margin: 0 auto 0.75rem;
-  box-shadow: 0 0 0 4px ${({ theme }) => theme.colors.primary};
 `;
 
 const Name = styled.h3`

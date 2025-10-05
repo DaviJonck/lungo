@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import styled from "styled-components";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
+import { useProfileCompletion } from "@/hooks/useProfileCompletion";
 
 interface OnboardingData {
   age: number;
@@ -210,6 +211,7 @@ const HelperText = styled.p`
 export default function OnboardingForm() {
   const router = useRouter();
   const { user } = useAuth();
+  const { clearCache } = useProfileCompletion();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState<OnboardingData>({
@@ -285,8 +287,13 @@ export default function OnboardingForm() {
         throw updateError;
       }
 
-      // Redirecionar para o dashboard
-      router.push("/dashboard");
+      // Limpar cache do perfil para forçar nova verificação
+      clearCache();
+
+      // Pequeno delay para garantir que o cache seja limpo antes do redirect
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 100);
     } catch (err) {
       console.error("Erro ao atualizar perfil:", err);
       setError("Erro ao salvar dados. Tente novamente.");

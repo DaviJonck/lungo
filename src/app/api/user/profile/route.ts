@@ -11,8 +11,6 @@ if (!supabaseUrl || !supabaseServiceKey) {
 
 export async function GET(request: NextRequest) {
   try {
-    console.log("Iniciando endpoint /api/user/profile");
-
     // Verificar se as variáveis de ambiente estão configuradas
     if (!supabaseUrl || !supabaseServiceKey) {
       console.error("Variáveis de ambiente não configuradas");
@@ -24,7 +22,6 @@ export async function GET(request: NextRequest) {
 
     // Extrair token de autorização
     const authHeader = request.headers.get("authorization");
-    console.log("Auth header:", authHeader ? "Presente" : "Ausente");
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return NextResponse.json(
@@ -34,10 +31,6 @@ export async function GET(request: NextRequest) {
     }
 
     const token = authHeader.split(" ")[1];
-    console.log("Token extraído:", token ? "Presente" : "Ausente");
-
-    // Verificar se o usuário está autenticado
-    console.log("Verificando autenticação do usuário...");
 
     // Criar cliente Supabase com o token de acesso
     const supabaseWithToken = createClient(supabaseUrl!, supabaseServiceKey!, {
@@ -62,25 +55,18 @@ export async function GET(request: NextRequest) {
     }
 
     if (!user) {
-      console.error("Usuário não encontrado");
       return NextResponse.json(
         { error: "Usuário não autenticado" },
         { status: 401 }
       );
     }
-
-    console.log("Usuário autenticado:", user.id);
-
-    // Buscar dados do usuário na tabela profiles
-    console.log("Buscando perfil do usuário na tabela profiles...");
     const { data: profile, error: profileError } = await supabaseWithToken
       .from("profiles")
-      .select("*, age, weight, height, respiratory_disease")
+      .select("*")
       .eq("id", user.id)
       .single();
 
     if (profileError) {
-      console.error("Erro ao buscar perfil:", profileError);
       // Se não encontrar perfil, retornar dados básicos
       return NextResponse.json({
         id: user.id,
@@ -90,6 +76,19 @@ export async function GET(request: NextRequest) {
           "Usuário",
         email: user.email || "",
         avatar: user.user_metadata?.avatar_url || user.user_metadata?.picture,
+        // Campos da tabela profiles (vazios quando não há perfil)
+        full_name: user.user_metadata?.full_name || null,
+        age: null,
+        gender: null,
+        weight: null,
+        height: null,
+        respiratory_disease: null,
+        rehab_start_date: null,
+        subscription_plan: null,
+        next_follow_up_date: null,
+        last_follow_up_date: null,
+        updated_at: null,
+        // Dados adicionais para compatibilidade
         progress: {
           weekly: 3,
           total: 5,
@@ -107,8 +106,6 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    console.log("Perfil encontrado:", profile);
-
     // Retornar dados do perfil encontrado
     return NextResponse.json({
       id: user.id,
@@ -122,12 +119,19 @@ export async function GET(request: NextRequest) {
         profile.avatar_url ||
         user.user_metadata?.avatar_url ||
         user.user_metadata?.picture,
-      // Dados adicionais do perfil
+      // Todos os dados da tabela profiles
+      full_name: profile.full_name,
       age: profile.age,
       gender: profile.gender,
       weight: profile.weight,
       height: profile.height,
       respiratory_disease: profile.respiratory_disease,
+      rehab_start_date: profile.rehab_start_date,
+      subscription_plan: profile.subscription_plan,
+      next_follow_up_date: profile.next_follow_up_date,
+      last_follow_up_date: profile.last_follow_up_date,
+      updated_at: profile.updated_at,
+      // Dados adicionais para compatibilidade
       progress: {
         weekly: 3,
         total: 5,

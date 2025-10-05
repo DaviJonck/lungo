@@ -16,7 +16,6 @@ import { Heart, Wind, Activity, Cloud, Play } from "lucide-react";
 import { useMemo, useState, useEffect } from "react";
 import { UserData } from "@/hooks/useUserData";
 import ExerciseModal from "./ExerciseModal";
-import AirQualityCard from "./AirQualityCard";
 
 interface SectionsProps {
   userData?: UserData | null;
@@ -568,9 +567,6 @@ export function Infographics({ userData }: SectionsProps) {
           </NextExerciseCard>
         </div>
       </GridTwoThirds>
-
-      {/* Card de Qualidade do Ar */}
-      <AirQualityCard />
     </>
   );
 }

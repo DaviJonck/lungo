@@ -66,9 +66,10 @@ export default function DashboardHeader({ title }: Props) {
                 </Link>
                 <button
                   onClick={async () => {
-                    await signOut();
+                    window.location.href = "/";
                     clearCache();
                     setIsUserMenuOpen(false);
+                    await signOut();
                   }}
                   style={{
                     display: "flex",

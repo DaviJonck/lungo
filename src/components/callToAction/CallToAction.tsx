@@ -82,15 +82,15 @@ const CtaButton = styled.button`
   transition: transform 0.15s ease, box-shadow 0.15s ease;
   width: 100%;
   justify-content: center;
-
+  padding: ${({ theme }) => theme.spacing.md};
   @media (min-width: ${({ theme }) => theme.breakpoints.sm}) {
     width: auto;
     font-size: ${({ theme }) => theme.fontSizes.base};
     padding: ${({ theme }) => theme.spacing.md};
-    ${({ theme }) => theme.spacing["2xl"]};
+    ${({ theme }) => theme.spacing["3xl"]};
   }
 
-  @media (min-width: ${({ theme }) => theme.breakpoints.md}) {
+  @media (min-width: ${({ theme }) => theme.breakpoints.xl}) {
     padding: ${({ theme }) => theme.spacing.md};
     ${({ theme }) => theme.spacing["3xl"]};
   }
