@@ -21,21 +21,75 @@ export function usePersistentExercise() {
   );
   const [isRestored, setIsRestored] = useState(false);
 
+  // Função para sanitizar dados do localStorage
+  const sanitizeExerciseData = (data: unknown): ExerciseState | null => {
+    if (!data || typeof data !== "object" || data === null) return null;
+
+    const obj = data as Record<string, unknown>;
+
+    // Validar campos obrigatórios
+    if (!obj.exerciseId || !obj.dataCollectionType || !obj.startTime)
+      return null;
+
+    // Validar tipos
+    if (
+      typeof obj.exerciseId !== "string" ||
+      !["A", "B", "C"].includes(obj.dataCollectionType as string) ||
+      typeof obj.startTime !== "number"
+    )
+      return null;
+
+    // Sanitizar formData
+    const sanitizedFormData: Record<string, string> = {};
+    if (
+      obj.formData &&
+      typeof obj.formData === "object" &&
+      obj.formData !== null
+    ) {
+      for (const [key, value] of Object.entries(obj.formData)) {
+        if (typeof key === "string" && typeof value === "string") {
+          // Sanitizar chave e valor
+          const cleanKey = key.replace(/[<>]/g, "").substring(0, 50);
+          const cleanValue = value.replace(/[<>]/g, "").substring(0, 1000);
+          sanitizedFormData[cleanKey] = cleanValue;
+        }
+      }
+    }
+
+    return {
+      exerciseId: obj.exerciseId.substring(0, 100),
+      isStarted: Boolean(obj.isStarted),
+      isTimerRunning: Boolean(obj.isTimerRunning),
+      timeRemaining: Math.max(0, Number(obj.timeRemaining) || 0),
+      formData: sanitizedFormData,
+      currentInterval: Math.max(0, Number(obj.currentInterval) || 0),
+      startTime: Number(obj.startTime),
+      dataCollectionType: obj.dataCollectionType as "A" | "B" | "C",
+    };
+  };
+
   // Carregar estado do localStorage na inicialização
   useEffect(() => {
     const savedState = localStorage.getItem(STORAGE_KEY);
     if (savedState) {
       try {
         const parsed = JSON.parse(savedState);
-        // Verificar se o exercício ainda é válido (não muito antigo)
-        const now = Date.now();
-        const timeElapsed = now - parsed.startTime;
-        const maxDuration = 25 * 60 * 1000; // 25 minutos em ms (maior duração possível)
+        const sanitized = sanitizeExerciseData(parsed);
 
-        if (timeElapsed < maxDuration) {
-          setExerciseState(parsed);
+        if (sanitized) {
+          // Verificar se o exercício ainda é válido (não muito antigo)
+          const now = Date.now();
+          const timeElapsed = now - sanitized.startTime;
+          const maxDuration = 25 * 60 * 1000; // 25 minutos em ms (maior duração possível)
+
+          if (timeElapsed < maxDuration) {
+            setExerciseState(sanitized);
+          } else {
+            // Limpar estado expirado
+            localStorage.removeItem(STORAGE_KEY);
+          }
         } else {
-          // Limpar estado expirado
+          // Dados inválidos, limpar
           localStorage.removeItem(STORAGE_KEY);
         }
       } catch (error) {

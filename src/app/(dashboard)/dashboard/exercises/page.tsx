@@ -64,7 +64,6 @@ const StatsRow = styled.div`
 
 const StatCard = styled.div`
   background: white;
-  padding: 1.5rem;
   border-radius: 1rem;
   border: 1px solid rgba(59, 130, 246, 0.1);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
@@ -73,7 +72,7 @@ const StatCard = styled.div`
   gap: 1rem;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    padding: 1rem;
+    padding: 0.5rem;
     gap: 0.75rem;
   }
 `;

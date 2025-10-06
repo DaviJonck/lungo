@@ -13,6 +13,10 @@ const profileCache = new Map<
 >();
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
 
+// Rate limiting básico
+const requestTimestamps = new Map<string, number[]>();
+const MAX_REQUESTS_PER_MINUTE = 10;
+
 interface ProfileData {
   age: number | null;
   weight: number | null;
@@ -43,12 +47,37 @@ export const useProfileCompletion = () => {
       const now = Date.now();
 
       if (cachedData && now - cachedData.timestamp < CACHE_DURATION) {
-        console.log("Usando dados do cache para perfil:", user.id);
+        // Log seguro apenas em desenvolvimento
+        if (process.env.NODE_ENV === "development") {
+          console.log(
+            "Usando dados do cache para perfil:",
+            user.id.substring(0, 8) + "..."
+          );
+        }
         setProfileData(cachedData.data.profile);
         setIsProfileComplete(cachedData.data.isComplete);
         setLoading(false);
         return;
       }
+
+      // Rate limiting básico
+      const userRequests = requestTimestamps.get(user.id) || [];
+      const recentRequests = userRequests.filter(
+        (timestamp) => now - timestamp < 60000
+      ); // Último minuto
+
+      if (recentRequests.length >= MAX_REQUESTS_PER_MINUTE) {
+        console.warn(
+          "Rate limit excedido para usuário:",
+          user.id.substring(0, 8) + "..."
+        );
+        setLoading(false);
+        return;
+      }
+
+      // Registrar nova requisição
+      recentRequests.push(now);
+      requestTimestamps.set(user.id, recentRequests);
 
       // Evitar múltiplas chamadas simultâneas
       if (hasInitialized.current) {
@@ -59,16 +88,20 @@ export const useProfileCompletion = () => {
       try {
         setLoading(true);
 
-        console.log("Fazendo chamada à API para verificar perfil:", user.id);
-
         // Usar a API /api/user/profile em vez de chamar Supabase diretamente
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+
         const response = await fetch("/api/user/profile", {
           method: "GET",
           headers: {
             Authorization: `Bearer ${session.access_token}`,
             "Content-Type": "application/json",
           },
+          signal: controller.signal,
         });
+
+        clearTimeout(timeoutId);
 
         if (!response.ok) {
           console.error("Erro ao buscar perfil via API:", response.status);
@@ -79,12 +112,20 @@ export const useProfileCompletion = () => {
 
         const userData = await response.json();
 
-        // Extrair dados do perfil da resposta da API
+        // Validar dados recebidos
+        if (!userData || typeof userData !== "object") {
+          throw new Error("Dados inválidos recebidos da API");
+        }
+
+        // Extrair dados do perfil da resposta da API com validação
         const profile = {
-          age: userData.age,
-          weight: userData.weight,
-          height: userData.height,
-          respiratory_disease: userData.respiratory_disease,
+          age: typeof userData.age === "number" ? userData.age : null,
+          weight: typeof userData.weight === "number" ? userData.weight : null,
+          height: typeof userData.height === "number" ? userData.height : null,
+          respiratory_disease:
+            typeof userData.respiratory_disease === "string"
+              ? userData.respiratory_disease
+              : null,
         };
 
         setProfileData(profile);
@@ -122,7 +163,13 @@ export const useProfileCompletion = () => {
     try {
       setLoading(true);
 
-      console.log("Forçando atualização do perfil para usuário:", user.id);
+      // Log seguro apenas em desenvolvimento
+      if (process.env.NODE_ENV === "development") {
+        console.log(
+          "Forçando atualização do perfil para usuário:",
+          user.id.substring(0, 8) + "..."
+        );
+      }
 
       // Usar a API /api/user/profile em vez de chamar Supabase diretamente
       const response = await fetch("/api/user/profile", {

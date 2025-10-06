@@ -2,16 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
-import {
-  X,
-  Play,
-  Pause,
-  RotateCcw,
-  Clock,
-  Heart,
-  Activity,
-  AlertTriangle,
-} from "lucide-react";
+import { X, Play, Clock, Heart, Activity } from "lucide-react";
 import { usePersistentExercise } from "@/hooks/usePersistentExercise";
 
 const ModalOverlay = styled.div`
@@ -34,71 +25,71 @@ const ModalOverlay = styled.div`
 const ModalContent = styled.div`
   position: relative;
   background: white;
-  border-radius: 16px;
+  border-radius: 24px;
   width: 100%;
-  max-width: 1000px;
-  height: 90vh; /* usa altura total da viewport para permitir scroll interno */
-  max-height: 90vh;
-  overflow: hidden; /* esconde overflow geral; painéis internos rolam */
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  max-width: 800px;
+  height: 85vh;
+  max-height: 85vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 
   @media (max-width: ${({ theme }) => theme.breakpoints.lg}) {
-    grid-template-columns: 1fr;
-    height: 95vh;
-    max-height: 95vh;
+    height: 90vh;
+    max-height: 90vh;
+    margin: 20px;
+    width: calc(100% - 40px);
   }
 `;
 
-const LeftPanel = styled.div`
-  padding: 32px;
+const MainContent = styled.div`
+  padding: 40px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  background: #f8fafc;
-  min-height: 0; /* necessário para permitir overflow de filhos em layouts flex/grid */
-  overflow-y: auto; /* rolagem interna do painel de inputs */
-  -webkit-overflow-scrolling: touch; /* scroll suave no iOS */
-`;
-
-const RightPanel = styled.div`
-  padding: 32px;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  background: white;
-  min-height: 0;
+  gap: 32px;
+  flex: 1;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
 `;
 
 const CloseButton = styled.button`
   position: absolute;
-  top: 16px;
-  right: 16px;
-  background: rgba(0, 0, 0, 0.1);
+  top: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.9);
   border: none;
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 
   &:hover {
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 1);
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
   }
 `;
 
 const ExerciseTitle = styled.h2`
-  font-size: 24px;
-  font-weight: 700;
-  color: #1c2b2d;
+  font-size: 32px;
+  font-weight: 800;
+  color: #1e293b;
   margin: 0;
+  text-align: center;
+  background: linear-gradient(135deg, #2a7ea5 0%, #1ea1a1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 `;
 
 const TaskList = styled.ul`
@@ -162,37 +153,29 @@ const StartButton = styled.button`
   }
 `;
 
-const VideoContainer = styled.div`
-  width: 100%;
-  aspect-ratio: 16/9;
-  background: #f1f5f9;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #64748b;
-  font-size: 14px;
-  border: 2px dashed #cbd5e1;
-`;
+// Removido: VideoContainer não utilizado
 
 const SubmitButton = styled.button`
-  background: #10b981;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: white;
   border: none;
-  border-radius: 8px;
-  padding: 12px 24px;
-  font-size: 14px;
-  font-weight: 600;
+  border-radius: 16px;
+  padding: 16px 32px;
+  font-size: 16px;
+  font-weight: 700;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 
   &:hover {
-    background: #059669;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
   }
 
-  &:disabled {
-    background: #9ca3af;
-    cursor: not-allowed;
+  &:active {
+    transform: translateY(0);
   }
 `;
 
@@ -218,58 +201,20 @@ const TimerContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
-  padding: 24px;
-  background: #f8fafc;
-  border-radius: 12px;
-  border: 2px solid #e2e8f0;
+  gap: 20px;
+  padding: 32px;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border-radius: 20px;
+  border: 2px solid #bae6fd;
+  box-shadow: 0 8px 32px rgba(14, 165, 233, 0.1);
 `;
 
 const TimerDisplay = styled.div`
-  font-size: 48px;
-  font-weight: 700;
-  color: #2a7ea5;
+  font-size: 64px;
+  font-weight: 900;
+  color: #0ea5e9;
   font-family: "Courier New", monospace;
-`;
-
-const TimerControls = styled.div`
-  display: flex;
-  gap: 12px;
-`;
-
-const TimerButton = styled.button<{ $variant: "play" | "pause" | "reset" }>`
-  padding: 8px 16px;
-  border-radius: 8px;
-  border: none;
-  font-weight: 600;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  transition: all 0.2s ease;
-
-  ${({ $variant }) => {
-    switch ($variant) {
-      case "play":
-        return `
-          background: #10b981;
-          color: white;
-          &:hover { background: #059669; }
-        `;
-      case "pause":
-        return `
-          background: #f59e0b;
-          color: white;
-          &:hover { background: #d97706; }
-        `;
-      case "reset":
-        return `
-          background: #6b7280;
-          color: white;
-          &:hover { background: #4b5563; }
-        `;
-    }
-  }}
+  text-shadow: 0 2px 4px rgba(14, 165, 233, 0.2);
 `;
 
 const DataCollectionContainer = styled.div`
@@ -349,33 +294,7 @@ const ObservationsTextarea = styled.textarea`
   }
 `;
 
-const RecoveryBanner = styled.div`
-  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-  border: 2px solid #f59e0b;
-  border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: #92400e;
-  font-weight: 600;
-`;
-
-const RecoveryButton = styled.button`
-  background: #f59e0b;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s ease;
-
-  &:hover {
-    background: #d97706;
-  }
-`;
+// Removido para MVP - RecoveryBanner e RecoveryButton
 
 type Exercise = {
   id: string;
@@ -401,18 +320,11 @@ export default function ExerciseModal({
 }: ExerciseModalProps) {
   const [countdown, setCountdown] = useState<number | null>(null);
   const [showAlert, setShowAlert] = useState(false);
-  const [showRecoveryBanner, setShowRecoveryBanner] = useState(false);
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const {
-    exerciseState,
-    isRestored,
-    startExercise,
-    updateExerciseState,
-    clearExercise,
-    resumeExercise,
-  } = usePersistentExercise();
+  const { exerciseState, startExercise, updateExerciseState, clearExercise } =
+    usePersistentExercise();
 
   // Configurações por tipo de coleta
   const getDataCollectionConfig = (type: "A" | "B" | "C") => {
@@ -453,31 +365,21 @@ export default function ExerciseModal({
     ? getDataCollectionConfig(exercise.dataCollectionType)
     : null;
 
-  // Verificar se há exercício em andamento quando o modal abre
+  // Verificar se o exercício atual é o mesmo que está em andamento
+  const isCurrentExercise = exerciseState?.exerciseId === exercise?.id;
+
+  // Verificar se deve limpar estado quando exercício diferente for aberto
   useEffect(() => {
-    if (isOpen && exercise && isRestored) {
-      if (exerciseState && exerciseState.exerciseId === exercise.id) {
-        // Só mostrar banner se o exercício foi realmente interrompido
-        // (tem tempo restante mas não está rodando)
-        const shouldShowBanner =
-          exerciseState.timeRemaining > 0 && !exerciseState.isTimerRunning;
-
-        console.log("🔍 Verificando se deve mostrar banner:", {
-          timeRemaining: exerciseState.timeRemaining,
-          isTimerRunning: exerciseState.isTimerRunning,
-          isStarted: exerciseState.isStarted,
-          shouldShow: shouldShowBanner,
-        });
-
-        if (shouldShowBanner) {
-          setShowRecoveryBanner(true);
-        }
-      } else if (exerciseState && exerciseState.exerciseId !== exercise.id) {
-        // Se há um exercício diferente em andamento, limpar o estado
-        clearExercise();
-      }
+    if (
+      isOpen &&
+      exercise &&
+      exerciseState &&
+      exerciseState.exerciseId !== exercise.id
+    ) {
+      // Se há um exercício diferente em andamento, limpar o estado
+      clearExercise();
     }
-  }, [isOpen, exercise, isRestored, exerciseState, clearExercise]);
+  }, [isOpen, exercise, exerciseState, clearExercise]);
 
   // Contador 3-2-1
   useEffect(() => {
@@ -487,7 +389,6 @@ export default function ExerciseModal({
       }, 1000);
       return () => clearTimeout(timer);
     } else if (countdown === 0 && config) {
-      console.log("🚀 Iniciando exercício após contador");
       startExercise(
         exercise!.id,
         exercise!.dataCollectionType,
@@ -497,20 +398,14 @@ export default function ExerciseModal({
     }
   }, [countdown, config, exercise, startExercise]);
 
-  // Timer principal
+  // Timer principal - só funciona para o exercício atual
   useEffect(() => {
-    console.log("⏰ Timer useEffect:", {
-      isTimerRunning: exerciseState?.isTimerRunning,
-      timeRemaining: exerciseState?.timeRemaining,
-      hasConfig: !!config,
-    });
-
     if (
+      isCurrentExercise &&
       exerciseState?.isTimerRunning &&
       exerciseState.timeRemaining > 0 &&
       config
     ) {
-      console.log("⏰ Iniciando timer");
       timerRef.current = setTimeout(() => {
         const newTimeRemaining = exerciseState.timeRemaining - 1;
 
@@ -529,7 +424,6 @@ export default function ExerciseModal({
         ) {
           updates.currentInterval = intervalsPassed;
           setShowAlert(true);
-          console.log("🔔 ALERTA: Hora de medir!");
           setTimeout(() => setShowAlert(false), 3000);
         }
 
@@ -541,6 +435,7 @@ export default function ExerciseModal({
       if (timerRef.current) clearTimeout(timerRef.current);
     };
   }, [
+    isCurrentExercise,
     exerciseState?.isTimerRunning,
     exerciseState?.timeRemaining,
     config,
@@ -555,39 +450,12 @@ export default function ExerciseModal({
     setCountdown(3);
   };
 
-  const handleResumeExercise = () => {
-    console.log("🔄 Iniciando resumo do exercício");
-    resumeExercise();
-    setShowRecoveryBanner(false);
-  };
+  // Removido para MVP - funcionalidades de resumo de exercício
 
-  const handleStartNewExercise = () => {
-    clearExercise();
-    setShowRecoveryBanner(false);
-    setCountdown(3);
-  };
-
-  const handleTimerToggle = () => {
-    if (exerciseState) {
-      updateExerciseState({
-        isTimerRunning: !exerciseState.isTimerRunning,
-      });
-    }
-  };
-
-  const handleTimerReset = () => {
-    if (exerciseState && config) {
-      updateExerciseState({
-        isTimerRunning: false,
-        timeRemaining: config.totalTime,
-        currentInterval: 0,
-        formData: {},
-      });
-    }
-  };
+  // Removido: controles de pausar/reiniciar timer
 
   const handleInputChange = (field: string, value: string) => {
-    if (exerciseState) {
+    if (isCurrentExercise && exerciseState) {
       updateExerciseState({
         formData: { ...exerciseState.formData, [field]: value },
       });
@@ -595,7 +463,7 @@ export default function ExerciseModal({
   };
 
   const handleSubmit = () => {
-    if (exerciseState) {
+    if (isCurrentExercise && exerciseState) {
       onComplete(exercise.id, exerciseState.formData);
       clearExercise();
       onClose();
@@ -615,12 +483,7 @@ export default function ExerciseModal({
       .padStart(2, "0")}`;
   };
 
-  const isExerciseComplete = exerciseState?.timeRemaining === 0;
-  const canFinish =
-    isExerciseComplete &&
-    exerciseState &&
-    Object.keys(exerciseState.formData).length > 0;
-  const isStarted = exerciseState?.isStarted || false;
+  const isStarted = isCurrentExercise && exerciseState?.isStarted;
 
   return (
     <ModalOverlay onClick={handleClose}>
@@ -629,32 +492,8 @@ export default function ExerciseModal({
           <X size={20} />
         </CloseButton>
 
-        <LeftPanel>
+        <MainContent>
           <ExerciseTitle>{exercise.title}</ExerciseTitle>
-
-          {showRecoveryBanner && (
-            <RecoveryBanner>
-              <AlertTriangle size={24} />
-              <div>
-                <div>Exercício em andamento detectado!</div>
-                <div style={{ fontSize: 14, fontWeight: 400, marginTop: 4 }}>
-                  Você pode continuar de onde parou ou iniciar um novo
-                  exercício.
-                </div>
-              </div>
-              <div style={{ display: "flex", gap: 8, marginLeft: "auto" }}>
-                <RecoveryButton onClick={handleResumeExercise}>
-                  Continuar
-                </RecoveryButton>
-                <RecoveryButton
-                  onClick={handleStartNewExercise}
-                  style={{ background: "#6b7280" }}
-                >
-                  Novo
-                </RecoveryButton>
-              </div>
-            </RecoveryBanner>
-          )}
 
           {countdown !== null ? (
             <CountdownContainer>
@@ -677,10 +516,11 @@ export default function ExerciseModal({
               <div>
                 <h3
                   style={{
-                    fontSize: 16,
+                    fontSize: 18,
                     fontWeight: 600,
-                    marginBottom: 12,
+                    marginBottom: 16,
                     color: "#374151",
+                    textAlign: "center",
                   }}
                 >
                   Tarefas do Exercício:
@@ -702,25 +542,13 @@ export default function ExerciseModal({
             </>
           ) : (
             <DataCollectionContainer>
-              <TimerContainer>
-                <TimerDisplay>
-                  {formatTime(exerciseState?.timeRemaining || 0)}
-                </TimerDisplay>
-                <TimerControls>
-                  <TimerButton $variant="play" onClick={handleTimerToggle}>
-                    {exerciseState?.isTimerRunning ? (
-                      <Pause size={16} />
-                    ) : (
-                      <Play size={16} />
-                    )}
-                    {exerciseState?.isTimerRunning ? "Pausar" : "Iniciar"}
-                  </TimerButton>
-                  <TimerButton $variant="reset" onClick={handleTimerReset}>
-                    <RotateCcw size={16} />
-                    Reset
-                  </TimerButton>
-                </TimerControls>
-              </TimerContainer>
+              {isCurrentExercise && (
+                <TimerContainer>
+                  <TimerDisplay>
+                    {formatTime(exerciseState?.timeRemaining || 0)}
+                  </TimerDisplay>
+                </TimerContainer>
+              )}
 
               {showAlert && (
                 <AlertContainer>
@@ -732,13 +560,14 @@ export default function ExerciseModal({
               <div>
                 <h3
                   style={{
-                    fontSize: 16,
+                    fontSize: 18,
                     fontWeight: 600,
-                    marginBottom: 16,
+                    marginBottom: 20,
                     color: "#374151",
+                    textAlign: "center",
                   }}
                 >
-                  Coleta de Dados - Tipo {exercise.dataCollectionType}:
+                  Coleta de Dados - Tipo {exercise.dataCollectionType}
                 </h3>
 
                 <DataInputsGrid>
@@ -768,22 +597,27 @@ export default function ExerciseModal({
                               : "Ex: 75"
                           }
                           value={
-                            exerciseState?.formData[`input_${index}`] || ""
+                            isCurrentExercise
+                              ? exerciseState?.formData[`input_${index}`] || ""
+                              : ""
                           }
                           onChange={(e) =>
                             handleInputChange(`input_${index}`, e.target.value)
                           }
-                          disabled={!exerciseState?.isTimerRunning}
                         />
                       </DataInputGroup>
                     ))}
                 </DataInputsGrid>
 
-                <DataInputGroup style={{ marginTop: 20 }}>
+                <DataInputGroup style={{ marginTop: 24 }}>
                   <DataLabel>Observações</DataLabel>
                   <ObservationsTextarea
                     placeholder="Como se sentiu durante o exercício..."
-                    value={exerciseState?.formData?.observations || ""}
+                    value={
+                      isCurrentExercise
+                        ? exerciseState?.formData?.observations || ""
+                        : ""
+                    }
                     onChange={(e) =>
                       handleInputChange("observations", e.target.value)
                     }
@@ -792,50 +626,14 @@ export default function ExerciseModal({
 
                 <SubmitButton
                   onClick={handleSubmit}
-                  disabled={!canFinish}
-                  style={{ marginTop: 20 }}
+                  style={{ marginTop: 32, width: "100%" }}
                 >
-                  {isExerciseComplete
-                    ? "Finalizar Exercício"
-                    : "Aguarde o término do exercício"}
+                  Finalizar Exercício
                 </SubmitButton>
               </div>
             </DataCollectionContainer>
           )}
-        </LeftPanel>
-
-        <RightPanel>
-          <h3
-            style={{
-              fontSize: 18,
-              fontWeight: 600,
-              marginBottom: 16,
-              color: "#374151",
-            }}
-          >
-            Vídeo do Exercício
-          </h3>
-
-          <VideoContainer>
-            {exercise.videoUrl ? (
-              <video
-                controls
-                style={{ width: "100%", height: "100%", borderRadius: "8px" }}
-              >
-                <source src={exercise.videoUrl} type="video/mp4" />
-                Seu navegador não suporta vídeos.
-              </video>
-            ) : (
-              <div style={{ textAlign: "center" }}>
-                <Play size={48} style={{ marginBottom: 12, opacity: 0.5 }} />
-                <div>Vídeo do exercício</div>
-                <div style={{ fontSize: 12, marginTop: 4 }}>
-                  (Vídeo será adicionado em breve)
-                </div>
-              </div>
-            )}
-          </VideoContainer>
-        </RightPanel>
+        </MainContent>
       </ModalContent>
     </ModalOverlay>
   );

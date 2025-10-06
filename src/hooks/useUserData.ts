@@ -5,6 +5,10 @@ import { useAuth } from "@/contexts/AuthContext";
 const userDataCache = new Map<string, { data: UserData; timestamp: number }>();
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
 
+// Rate limiting básico
+const requestTimestamps = new Map<string, number[]>();
+const MAX_REQUESTS_PER_MINUTE = 10;
+
 export interface UserData {
   id: string;
   name: string;
@@ -51,17 +55,26 @@ export const useUserData = () => {
       const now = Date.now();
 
       if (cachedData && now - cachedData.timestamp < CACHE_DURATION) {
-        // Log seguro apenas em desenvolvimento
-        if (process.env.NODE_ENV === "development") {
-          console.log(
-            "Usando dados do cache para usuário:",
-            user.id.substring(0, 8) + "..."
-          );
-        }
         setUserData(cachedData.data);
         setLoading(false);
         return;
       }
+
+      // Rate limiting básico
+      const userRequests = requestTimestamps.get(user.id) || [];
+      const recentRequests = userRequests.filter(
+        (timestamp) => now - timestamp < 60000
+      ); // Último minuto
+
+      if (recentRequests.length >= MAX_REQUESTS_PER_MINUTE) {
+        console.warn("Rate limit excedido para usuário:");
+        setLoading(false);
+        return;
+      }
+
+      // Registrar nova requisição
+      recentRequests.push(now);
+      requestTimestamps.set(user.id, recentRequests);
 
       // Evitar múltiplas chamadas simultâneas
       if (hasInitialized.current) {
@@ -81,20 +94,36 @@ export const useUserData = () => {
           );
         }
 
-        // Usar o access_token da sessão para autenticação
+        // Usar o access_token da sessão para autenticação com timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+
         const response = await fetch("/api/user/profile", {
           method: "GET",
           headers: {
             Authorization: `Bearer ${session.access_token}`,
             "Content-Type": "application/json",
           },
+          signal: controller.signal,
         });
+
+        clearTimeout(timeoutId);
 
         if (!response.ok) {
           throw new Error("Falha ao carregar dados do usuário");
         }
 
         const data = await response.json();
+
+        // Validar dados recebidos
+        if (!data || typeof data !== "object") {
+          throw new Error("Dados inválidos recebidos da API");
+        }
+
+        // Validar campos obrigatórios
+        if (!data.id || !data.name || !data.email) {
+          throw new Error("Dados essenciais ausentes na resposta da API");
+        }
 
         // Salvar no cache
         userDataCache.set(cacheKey, {
@@ -160,13 +189,19 @@ export const useUserData = () => {
         );
       }
 
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+
       const response = await fetch("/api/user/profile", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${session.access_token}`,
           "Content-Type": "application/json",
         },
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         throw new Error("Falha ao carregar dados do usuário");
