@@ -2,89 +2,211 @@
 
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { CheckCircle, ArrowRight } from "lucide-react";
+import { CheckCircle, ArrowRight, Heart, Star } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { theme } from "@/styles/theme";
 
 const Container = styled.div`
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #acf0cf 0%, #e1f7e7 100%);
-  padding: 1.5rem;
+  background: linear-gradient(
+    135deg,
+    ${theme.colors.primary} 0%,
+    ${theme.colors.background} 100%
+  );
+  padding: ${theme.spacing.lg};
+  position: relative;
+  overflow: hidden;
 `;
 
 const Card = styled.div`
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-  padding: 2rem;
-  max-width: 560px;
+  background: ${theme.colors.white};
+  border-radius: ${theme.borderRadius.xl};
+  box-shadow: ${theme.shadows.xl};
+  padding: ${theme.spacing["2xl"]};
+  max-width: 500px;
   width: 100%;
   text-align: center;
+  position: relative;
+  z-index: 10;
+  border: 2px solid ${theme.colors.secondary}20;
 `;
 
 const IconWrap = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 64px;
-  height: 64px;
-  margin: 0 auto 1rem;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto ${theme.spacing.md};
   border-radius: 50%;
-  background: #10b98115;
+  background: linear-gradient(
+    135deg,
+    ${theme.colors.secondary}15,
+    ${theme.colors.secondaryLighter}15
+  );
+  border: 3px solid ${theme.colors.secondary}30;
+  position: relative;
+  animation: pulse 2s infinite;
 
   svg {
-    color: #10b981;
+    color: ${theme.colors.secondary};
+    filter: drop-shadow(0 2px 4px rgba(122, 178, 211, 0.3));
+  }
+
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+      box-shadow: 0 0 0 0 ${theme.colors.secondary}40;
+    }
+    70% {
+      transform: scale(1.05);
+      box-shadow: 0 0 0 10px ${theme.colors.secondary}00;
+    }
+    100% {
+      transform: scale(1);
+      box-shadow: 0 0 0 0 ${theme.colors.secondary}00;
+    }
   }
 `;
 
 const Title = styled.h1`
-  font-size: 1.6rem;
+  font-size: ${theme.fontSizes["3xl"]};
   font-weight: 800;
-  color: #064e3b;
-  margin-bottom: 0.5rem;
+  color: ${theme.colors.textBlack};
+  margin-bottom: ${theme.spacing.sm};
+  background: linear-gradient(
+    135deg,
+    ${theme.colors.secondary} 0%,
+    ${theme.colors.secondaryLighter} 100%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 `;
 
 const Subtitle = styled.p`
-  color: #475569;
-  font-size: 0.95rem;
-  line-height: 1.5;
-  margin-bottom: 1.25rem;
+  color: ${theme.colors.textBlue};
+  font-size: ${theme.fontSizes.base};
+  line-height: 1.6;
+  margin-bottom: ${theme.spacing.lg};
+  font-weight: 500;
 `;
 
 const Divider = styled.hr`
   border: none;
-  height: 1px;
-  background: #e2e8f0;
-  margin: 1.25rem 0 1.5rem;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    ${theme.colors.secondary}50 50%,
+    transparent 100%
+  );
+  margin: ${theme.spacing.lg} 0;
 `;
 
 const Button = styled.button`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: ${theme.spacing.sm};
   width: 100%;
-  padding: 0.85rem 1rem;
+  padding: ${theme.spacing.md} ${theme.spacing.lg};
   border: none;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  color: white;
+  border-radius: ${theme.borderRadius.lg};
+  background: linear-gradient(
+    135deg,
+    ${theme.colors.secondary} 0%,
+    ${theme.colors.secondaryLighter} 100%
+  );
+  color: ${theme.colors.white};
   font-weight: 700;
-  font-size: 0.95rem;
+  font-size: ${theme.fontSizes.base};
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-  box-shadow: 0 6px 14px -4px rgba(16, 185, 129, 0.4);
+  transition: all 0.3s ease;
+  box-shadow: ${theme.shadows.lg};
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.2),
+      transparent
+    );
+    transition: left 0.5s;
+  }
 
   &:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 10px 18px -5px rgba(16, 185, 129, 0.45);
+    transform: translateY(-2px);
+    box-shadow: ${theme.shadows.xl};
+
+    &::before {
+      left: 100%;
+    }
   }
 
   &:active {
     transform: translateY(0);
   }
+`;
+
+const DecorativeElements = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 1;
+`;
+
+const FloatingIcon = styled.div<{
+  $top: string;
+  $left: string;
+  $delay: string;
+}>`
+  position: absolute;
+  top: ${({ $top }) => $top};
+  left: ${({ $left }) => $left};
+  color: ${theme.colors.secondary}30;
+  animation: float 6s ease-in-out infinite;
+  animation-delay: ${({ $delay }) => $delay};
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+      transform: translateY(-20px) rotate(180deg);
+    }
+  }
+`;
+
+const OrderIdBadge = styled.div`
+  background: linear-gradient(
+    135deg,
+    ${theme.colors.secondary}15,
+    ${theme.colors.secondaryLighter}15
+  );
+  border: 1px solid ${theme.colors.secondary}30;
+  border-radius: ${theme.borderRadius.md};
+  padding: ${theme.spacing.sm} ${theme.spacing.md};
+  margin: ${theme.spacing.md} 0;
+  font-size: ${theme.fontSizes.sm};
+  color: ${theme.colors.textBlue};
+  font-weight: 600;
+  display: inline-block;
 `;
 
 export default function SubscriptionSuccessPage() {
@@ -110,24 +232,21 @@ export default function SubscriptionSuccessPage() {
     <Container>
       <Card>
         <IconWrap>
-          <CheckCircle size={36} />
+          <CheckCircle size={48} />
         </IconWrap>
-        <Title>Assinatura ativada com sucesso!</Title>
+        <Title>🎉 Assinatura ativada com sucesso!</Title>
         <Subtitle>
-          Obrigado por apoiar o LunGo. Sua assinatura foi confirmada pelo
-          Pagar.me e seu acesso premium está liberado.
-          {orderId && (
-            <>
-              <br />
-              <br />
-              <strong>ID do pedido: {orderId}</strong>
-            </>
-          )}
+          Obrigado por apoiar o LunGo! Sua assinatura foi confirmada pelo
+          Pagar.me e seu acesso premium está liberado. Agora você tem acesso a
+          todos os recursos exclusivos da plataforma.
         </Subtitle>
+
+        {orderId && <OrderIdBadge>ID do pedido: {orderId}</OrderIdBadge>}
+
         <Divider />
         <Button onClick={goToDashboard}>
           Ir para o painel
-          <ArrowRight size={18} />
+          <ArrowRight size={20} />
         </Button>
       </Card>
     </Container>
