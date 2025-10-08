@@ -209,13 +209,6 @@ const SuccessMessage = styled.div`
   font-family: ${({ theme }) => theme.fonts.primary};
 `;
 
-const PasswordRequirements = styled.div`
-  font-size: ${({ theme }) => theme.fontSizes.xs};
-  color: ${({ theme }) => theme.colors.textBlue};
-  margin-top: ${({ theme }) => theme.spacing.xs};
-  font-family: ${({ theme }) => theme.fonts.primary};
-`;
-
 interface SignupFormProps {
   onToggleMode: () => void;
 }

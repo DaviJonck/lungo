@@ -3,6 +3,7 @@
 import React from "react";
 import styled from "styled-components";
 import { HandHeart, Trophy } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const Section = styled.section`
   position: relative;
@@ -70,7 +71,7 @@ const Cards = styled.div`
   align-items: start;
 
   @media (min-width: ${({ theme }) => theme.breakpoints.lg}) {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 1.5rem;
   }
 `;
@@ -165,19 +166,29 @@ const Divider = styled.hr`
   margin: 0.75rem 0 0.5rem;
 `;
 
-const Feature = styled.li`
+const Feature = styled.li<{ $included?: boolean }>`
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: ${({ theme }) => theme.colors.textBlue};
+  color: ${({ theme, $included }) =>
+    $included ? theme.colors.textBlue : theme.colors.textBlue};
   padding: 0.35rem 0;
   list-style: none;
+  opacity: ${({ $included }) => ($included ? 1 : 0.6)};
+`;
 
-  &::before {
-    content: "✔";
-    color: ${({ theme }) => theme.colors.textSuccess};
-    font-weight: 700;
-  }
+const Icon = styled.span<{ $included?: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: ${({ $included }) => ($included ? "#10b981" : "#ef4444")};
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  flex-shrink: 0;
 `;
 
 const Actions = styled.div`
@@ -249,6 +260,7 @@ const DecoBottomLeft = styled.img`
 `;
 
 export default function Pricing() {
+  const router = useRouter();
   return (
     <Section id="planos" aria-labelledby="pricing-heading">
       <TopCurve />
@@ -264,32 +276,54 @@ export default function Pricing() {
         <Cards>
           <Card>
             <CardHeader>
-              <h3>Grátis</h3>
+              <h3>Básico</h3>
               <IconCircle>
                 <HandHeart size={18} color="#7ab2d3" />
               </IconCircle>
             </CardHeader>
             <PriceRow>
-              <span className="price">R$ 00,00</span>
+              <span className="price">R$ 29,90</span>
               <span className="per">por mês</span>
             </PriceRow>
             <Description>
-              Plano recomendado para quem quer um acompanhamento exclusivo.
+              Plano essencial para começar sua jornada de saúde respiratória.
             </Description>
             <Actions>
-              <Btn variant="ghost">Assinar</Btn>
+              <Btn variant="ghost" onClick={() => router.push("/subscription")}>
+                Assinar
+              </Btn>
             </Actions>
             <Divider />
             <ul>
-              <Feature>Vantagem 01</Feature>
-              <Feature>Vantagem 02</Feature>
-              <Feature>Vantagem 03</Feature>
-              <Feature>Vantagem 04</Feature>
+              <Feature $included={false}>
+                <Icon $included={false}>✗</Icon>
+                Consulta Profissional
+              </Feature>
+              <Feature $included={true}>
+                <Icon $included={true}>✓</Icon>
+                Plano de Exercícios: Padrão
+              </Feature>
+              <Feature $included={true}>
+                <Icon $included={true}>✓</Icon>
+                Relatórios: Básico Mensal
+              </Feature>
+              <Feature $included={false}>
+                <Icon $included={false}>✗</Icon>
+                Conteúdo: Acesso Total
+              </Feature>
+              <Feature $included={true}>
+                <Icon $included={true}>✓</Icon>
+                Suporte: E-mail
+              </Feature>
+              <Feature $included={true}>
+                <Icon $included={true}>✓</Icon>
+                Materiais Complementares: Guias Básicos
+              </Feature>
             </ul>
           </Card>
 
           <Card $highlighted>
-            <Badge>30 dias grátis</Badge>
+            <Badge>Mais Popular</Badge>
             <CardHeader>
               <h3>Recomendado</h3>
               <IconCircle>
@@ -297,47 +331,47 @@ export default function Pricing() {
               </IconCircle>
             </CardHeader>
             <PriceRow>
-              <span className="price">R$ 39,90</span>
+              <span className="price">R$ 59,90</span>
               <span className="per">por mês</span>
             </PriceRow>
             <Description>
-              Plano recomendado para quem quer um acompanhamento exclusivo.
+              Plano completo com todos os recursos e acompanhamento
+              profissional.
             </Description>
             <Actions>
-              <Btn variant="primary">Assinar</Btn>
+              <Btn
+                variant="primary"
+                onClick={() => router.push("/subscription")}
+              >
+                Assinar
+              </Btn>
             </Actions>
             <Divider />
             <ul>
-              <Feature>Vantagem 01</Feature>
-              <Feature>Vantagem 02</Feature>
-              <Feature>Vantagem 03</Feature>
-              <Feature>Vantagem 04</Feature>
-            </ul>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <h3>Pro</h3>
-              <IconCircle>
-                <HandHeart size={18} color="#7ab2d3" />
-              </IconCircle>
-            </CardHeader>
-            <PriceRow>
-              <span className="price">R$ 69,90</span>
-              <span className="per">por mês</span>
-            </PriceRow>
-            <Description>
-              Plano recomendado para quem quer um acompanhamento exclusivo.
-            </Description>
-            <Actions>
-              <Btn variant="ghost">Assinar</Btn>
-            </Actions>
-            <Divider />
-            <ul>
-              <Feature>Vantagem 01</Feature>
-              <Feature>Vantagem 02</Feature>
-              <Feature>Vantagem 03</Feature>
-              <Feature>Vantagem 04</Feature>
+              <Feature $included={true}>
+                <Icon $included={true}>✓</Icon>
+                Consulta Profissional: 1x a cada 3 meses
+              </Feature>
+              <Feature $included={true}>
+                <Icon $included={true}>✓</Icon>
+                Plano de Exercícios: Personalizado
+              </Feature>
+              <Feature $included={true}>
+                <Icon $included={true}>✓</Icon>
+                Relatórios: Detalhado Semanal (PDF)
+              </Feature>
+              <Feature $included={true}>
+                <Icon $included={true}>✓</Icon>
+                Conteúdo: Acesso Total
+              </Feature>
+              <Feature $included={true}>
+                <Icon $included={true}>✓</Icon>
+                Suporte: Prioritário via Chat
+              </Feature>
+              <Feature $included={true}>
+                <Icon $included={true}>✓</Icon>
+                Materiais Complementares: E-books Exclusivos
+              </Feature>
             </ul>
           </Card>
         </Cards>
