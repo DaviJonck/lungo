@@ -91,7 +91,7 @@ const Header = styled.header`
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  padding: 1rem 2rem;
+  padding: 0.5rem;
   display: flex;
   align-items: center;
   z-index: 100;
@@ -122,13 +122,11 @@ const BackButton = styled.button`
 `;
 
 const Container = styled.div`
-  height: 100vh;
   background: linear-gradient(135deg, #acd0f5 0%, #e1e1e1 100%);
   padding: 1rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow: hidden;
   padding-top: 80px;
 `;
 
@@ -186,10 +184,9 @@ const PlansGrid = styled.div`
   grid-template-columns: 1fr;
   gap: 1rem;
   max-width: 900px;
+  padding-top: 1rem;
   width: 100%;
   flex: 1;
-  overflow-y: auto;
-  padding-top: 0.5rem;
 
   @media (min-width: 768px) {
     grid-template-columns: repeat(2, 1fr);
@@ -199,12 +196,12 @@ const PlansGrid = styled.div`
 
 const PlanCard = styled.div<{ $featured?: boolean }>`
   background: white;
-  border-radius: 12px;
-  padding: 1.5rem;
+  border-radius: 10px;
+  padding: 1rem;
   box-shadow: ${({ $featured }) =>
     $featured
-      ? "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)"
-      : "0 4px 6px -1px rgba(0, 0, 0, 0.1)"};
+      ? "0 8px 12px -3px rgba(0, 0, 0, 0.1), 0 3px 4px -2px rgba(0, 0, 0, 0.05)"
+      : "0 3px 4px -1px rgba(0, 0, 0, 0.1)"};
   border: ${({ $featured }) =>
     $featured ? "2px solid #3b82f6" : "1px solid #e2e8f0"};
   position: relative;
@@ -212,16 +209,16 @@ const PlanCard = styled.div<{ $featured?: boolean }>`
   display: flex;
   flex-direction: column;
   height: fit-content;
-
+  max-width: 400px;
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+    box-shadow: 0 12px 16px -4px rgba(0, 0, 0, 0.1);
   }
 `;
 
 const FeaturedBadge = styled.div`
   position: absolute;
-  top: -6px;
+  top: -12px;
   left: 50%;
   transform: translateX(-50%);
   background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
@@ -237,18 +234,18 @@ const FeaturedBadge = styled.div`
 
 const PlanHeader = styled.div`
   text-align: center;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
 `;
 
 const PlanIcon = styled.div<{ $color: string }>`
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
   background: ${({ $color }) => $color}15;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 0.5rem;
+  margin: 0 auto 0.4rem;
 
   svg {
     color: ${({ $color }) => $color};
@@ -256,42 +253,42 @@ const PlanIcon = styled.div<{ $color: string }>`
 `;
 
 const PlanName = styled.h3`
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 700;
   color: #1e293b;
-  margin-bottom: 0.3rem;
+  margin-bottom: 0.25rem;
 `;
 
 const PlanDescription = styled.p`
   color: #64748b;
-  font-size: 0.8rem;
-  line-height: 1.4;
+  font-size: 0.75rem;
+  line-height: 1.3;
 `;
 
 const PricingSection = styled.div`
   text-align: center;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
 `;
 
 const Price = styled.div`
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: 800;
   color: #1e293b;
-  margin-bottom: 0.3rem;
+  margin-bottom: 0.25rem;
 `;
 
 const BillingPeriod = styled.div`
   color: #64748b;
-  font-size: 0.8rem;
-  margin-bottom: 0.5rem;
+  font-size: 0.75rem;
+  margin-bottom: 0.4rem;
 `;
 
 const SavingsBadge = styled.div`
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: white;
-  padding: 0.3rem 0.6rem;
-  border-radius: 12px;
-  font-size: 0.7rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 10px;
+  font-size: 0.65rem;
   font-weight: 600;
   display: inline-block;
 `;
@@ -299,22 +296,22 @@ const SavingsBadge = styled.div`
 const FeaturesList = styled.ul`
   list-style: none;
   padding: 0;
-  margin: 0 0 1rem 0;
+  margin: 0 0 0.75rem 0;
   flex: 1;
 `;
 
 const Feature = styled.li<{ $included?: boolean }>`
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.4rem 0;
+  gap: 0.4rem;
+  padding: 0.3rem 0;
   color: ${({ $included }) => ($included ? "#1e293b" : "#94a3b8")};
-  font-size: 0.8rem;
+  font-size: 0.75rem;
 `;
 
 const FeatureIcon = styled.div<{ $included?: boolean }>`
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
   background: ${({ $included }) => ($included ? "#10b981" : "#e2e8f0")};
   display: flex;
@@ -323,31 +320,31 @@ const FeatureIcon = styled.div<{ $included?: boolean }>`
   flex-shrink: 0;
 
   svg {
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
     color: ${({ $included }) => ($included ? "white" : "#94a3b8")};
   }
 `;
 
 const SubscribeButton = styled.button<{ $featured?: boolean }>`
   width: 100%;
-  padding: 0.75rem;
+  padding: 0.6rem;
   border: none;
-  border-radius: 8px;
+  border-radius: 6px;
   background: ${({ $featured }) =>
     $featured
       ? "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)"
       : "linear-gradient(135deg, #64748b 0%, #475569 100%)"};
   color: white;
   font-weight: 700;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 3px 4px -1px rgba(0, 0, 0, 0.1);
 
   &:hover {
     transform: translateY(-1px);
-    box-shadow: 0 8px 12px -3px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 6px 8px -2px rgba(0, 0, 0, 0.1);
   }
 
   &:active {
@@ -427,15 +424,12 @@ export default function SubscriptionPage() {
     showToast("info", "Criando sua sessão de pagamento...");
 
     try {
-      // 2. Obtenha o ID do plano correto do seu objeto de dados
       const planId = pricingData[plan][billingCycle].id;
 
       if (!planId) {
         throw new Error("ID do plano não encontrado para a seleção atual.");
       }
 
-      // 3. Invoque sua Supabase Edge Function
-      //    Substitua 'create-pagarme-checkout' pelo nome real da sua função
       const { data, error } = await supabase.functions.invoke(
         "create-pagarme-checkout",
         {
@@ -444,7 +438,6 @@ export default function SubscriptionPage() {
       );
 
       if (error) {
-        // Isso capturará erros da própria função (ex: usuário não autenticado)
         throw new Error(error.message);
       }
 

@@ -17,6 +17,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
+      <head>
+        <link rel="icon" href="/Logo.svg" sizes="32x32" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/Logo.svg" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/Logo.svg" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/Logo.svg" />
+      </head>
       <body className={nunitoSans.variable} suppressHydrationWarning={true}>
         <ThemeProvider>
           <AuthProvider>{children}</AuthProvider>
