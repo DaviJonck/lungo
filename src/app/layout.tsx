@@ -1,6 +1,8 @@
 import { Nunito_Sans } from "next/font/google";
 import ThemeProvider from "../components/ThemeProvider";
 import { AuthProvider } from "../contexts/AuthContext";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+
 import "./globals.css";
 
 const nunitoSans = Nunito_Sans({
@@ -25,7 +27,10 @@ export default function RootLayout({
       </head>
       <body className={nunitoSans.variable} suppressHydrationWarning={true}>
         <ThemeProvider>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+            <SpeedInsights />
+            {children}
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

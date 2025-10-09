@@ -16,6 +16,7 @@
     "@supabase/ssr": "^0.7.0",
     "@supabase/supabase-js": "^2.58.0",
     "@types/styled-components": "^5.1.34",
+    "@vercel/speed-insights": "^1.2.0",
     "lucide-react": "^0.544.0",
     "next": "15.5.3",
     "pagarme": "^4.35.2",

@@ -14,8 +14,10 @@ import {
 import { Home, NotebookPen, Dumbbell, Book, User } from "lucide-react";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function Sidebar() {
+  const router = useRouter();
   const pathname = usePathname();
   const isHomeActive = pathname === "/dashboard" || pathname === "/";
   const isDiaryActive = pathname?.startsWith("/dashboard/diary");
@@ -94,7 +96,9 @@ export default function Sidebar() {
           >
             Acesso completo a todos os recursos
           </div>
-          <ProButton>Assinar Agora</ProButton>
+          <ProButton onClick={() => router.push("/subscription")}>
+            Assinar Agora
+          </ProButton>
         </ProCard>
       </SidebarRoot>
       <BottomNav>
