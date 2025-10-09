@@ -70,7 +70,7 @@ const StatCard = styled.div`
   display: flex;
   align-items: center;
   gap: 1rem;
-
+  padding: 0.5rem;
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
     padding: 0.5rem;
     gap: 0.75rem;

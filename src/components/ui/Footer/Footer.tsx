@@ -185,7 +185,8 @@ export default function Footer() {
               <Phone size={18} /> (48) 9 4567-7890
             </ContactRow>
             <ContactRow>
-              <Handshake size={18} /> Parcerias e dúvidas? contato@lungo.com
+              <Handshake size={18} /> Parcerias e dúvidas?
+              lungo.contato@gmail.com
             </ContactRow>
           </Contact>
           <Newsletter>
