@@ -9,8 +9,7 @@ const Section = styled.section`
   width: 100%;
   position: relative; /* Essencial para posicionar o ::before */
   padding: ${({}) => "5rem"} 0; /* Aumentei o padding para a curva ter espaço */
-  background-color: ${({ theme }) =>
-    theme.colors.background}; /* Cor superior */
+  background: linear-gradient(90deg, #dff2eb 0%, #b9e5e8 100%);
   overflow: hidden; /* Garante que a curva não "vaze" para fora da seção */
 
   /* A MÁGICA DA CURVA ACONTECE AQUI */

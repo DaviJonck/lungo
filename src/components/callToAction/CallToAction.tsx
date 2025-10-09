@@ -2,7 +2,7 @@ import styled from "styled-components";
 import Image from "next/image";
 
 const Section = styled.section`
-  background-color: ${({ theme }) => theme.colors.background};
+  background: linear-gradient(90deg, #dff2eb 0%, #b9e5e8 100%);
   width: 100%;
 `;
 

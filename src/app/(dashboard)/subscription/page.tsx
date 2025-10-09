@@ -122,12 +122,13 @@ const BackButton = styled.button`
 `;
 
 const Container = styled.div`
-  background: linear-gradient(135deg, #acd0f5 0%, #e1e1e1 100%);
+  background: linear-gradient(90deg, #dff2eb 0%, #b9e5e8 100%);
   padding: 1rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding-top: 80px;
+  min-height: 100vh;
 `;
 
 const PageHeader = styled.div`
@@ -165,7 +166,7 @@ const ToggleContainer = styled.div`
 const ToggleButton = styled.button<{ $active?: boolean }>`
   padding: 0.5rem 1rem;
   border: none;
-  background: ${({ $active }) => ($active ? "#3b82f6" : "transparent")};
+  background: ${({ $active }) => ($active ? "#3cd7cd" : "transparent")};
   color: ${({ $active }) => ($active ? "white" : "#64748b")};
   border-radius: 8px;
   font-weight: 600;
@@ -175,7 +176,7 @@ const ToggleButton = styled.button<{ $active?: boolean }>`
   position: relative;
 
   &:hover {
-    background: ${({ $active }) => ($active ? "#3b82f6" : "#f1f5f9")};
+    background: ${({ $active }) => ($active ? "#3cd7cd" : "#f1f5f9")};
   }
 `;
 
@@ -203,7 +204,7 @@ const PlanCard = styled.div<{ $featured?: boolean }>`
       ? "0 8px 12px -3px rgba(0, 0, 0, 0.1), 0 3px 4px -2px rgba(0, 0, 0, 0.05)"
       : "0 3px 4px -1px rgba(0, 0, 0, 0.1)"};
   border: ${({ $featured }) =>
-    $featured ? "2px solid #3b82f6" : "1px solid #e2e8f0"};
+    $featured ? "2px solid #3CD7CD" : "1px solid #e2e8f0"};
   position: relative;
   transition: all 0.3s ease;
   display: flex;
@@ -221,7 +222,7 @@ const FeaturedBadge = styled.div`
   top: -12px;
   left: 50%;
   transform: translateX(-50%);
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  background: linear-gradient(135deg, #3cd7cd 0%, #3cd7cd 100%);
   color: white;
   padding: 0.25rem 0.6rem;
   border-radius: 12px;
@@ -333,8 +334,8 @@ const SubscribeButton = styled.button<{ $featured?: boolean }>`
   border-radius: 6px;
   background: ${({ $featured }) =>
     $featured
-      ? "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)"
-      : "linear-gradient(135deg, #64748b 0%, #475569 100%)"};
+      ? "linear-gradient(135deg, #3cd7cd 0%, #3cd7cd 100%)"
+      : "linear-gradient(135deg, rgb(135, 184, 248) 0%, rgb(135, 184, 248) 100%)"};
   color: white;
   font-weight: 700;
   font-size: 0.8rem;
@@ -604,7 +605,7 @@ export default function SubscriptionPage() {
         <PlanCard $featured>
           <FeaturedBadge>Mais Popular</FeaturedBadge>
           <PlanHeader>
-            <PlanIcon $color="#3b82f6">
+            <PlanIcon $color="#3cd7cd">
               <Star size={24} />
             </PlanIcon>
             <PlanName>Recomendado</PlanName>

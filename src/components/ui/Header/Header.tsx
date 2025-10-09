@@ -23,8 +23,10 @@ const StyledHeader = styled.header.withConfig({
   left: 0;
   width: 100%;
   z-index: 5;
-  background-color: ${({ theme, isScrolled }) =>
-    isScrolled ? "rgba(185,229,232,0.86)" : theme.colors.background};
+  background-color: ${({ isScrolled }) =>
+    isScrolled
+      ? "rgba(185,229,232,0.86)"
+      : "linear-gradient(90deg, #dff2eb 0%, #b9e5e8 100%)"};
 
   backdrop-filter: ${({ isScrolled }) =>
     isScrolled ? "saturate(180%) blur(8px)" : "none"};
@@ -41,7 +43,6 @@ const StyledHeader = styled.header.withConfig({
 const HeaderSpacer = styled.div.withConfig({
   shouldForwardProp: (prop) => prop !== "isScrolled",
 })<{ isScrolled: boolean }>`
-  height: ${({ isScrolled }) => (isScrolled ? "64px" : "80px")};
   transition: height 0.2s ease;
 `;
 
@@ -450,7 +451,8 @@ const Header = () => {
               ) : (
                 <li style={{ position: "relative" }}>
                   <button
-                    onClick={() => setIsUserMenuOpen((v) => !v)}
+                    onMouseEnter={() => setIsUserMenuOpen(true)}
+                    onMouseLeave={() => setIsUserMenuOpen(false)}
                     style={{
                       background: "transparent",
                       border: 0,
@@ -481,6 +483,8 @@ const Header = () => {
                   </button>
                   {isUserMenuOpen && (
                     <div
+                      onMouseEnter={() => setIsUserMenuOpen(true)}
+                      onMouseLeave={() => setIsUserMenuOpen(false)}
                       style={{
                         position: "absolute",
                         right: 0,
@@ -502,10 +506,20 @@ const Header = () => {
                           gap: 8,
                           padding: "10px 12px",
                           borderRadius: 10,
+                          textDecoration: "none",
+                          color: "#1e293b",
+                          fontWeight: 500,
+                          transition: "background-color 0.2s ease",
                         }}
-                        onClick={() => setIsUserMenuOpen(false)}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = "#f1f5f9";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = "transparent";
+                        }}
                       >
-                        <House size={18} /> Dashboard
+                        <House size={16} />
+                        Dashboard
                       </Link>
                       <Link
                         href="/dashboard/profile"
@@ -515,10 +529,20 @@ const Header = () => {
                           gap: 8,
                           padding: "10px 12px",
                           borderRadius: 10,
+                          textDecoration: "none",
+                          color: "#1e293b",
+                          fontWeight: 500,
+                          transition: "background-color 0.2s ease",
                         }}
-                        onClick={() => setIsUserMenuOpen(false)}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = "#f1f5f9";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = "transparent";
+                        }}
                       >
-                        <CircleUserRound size={18} /> Perfil
+                        <CircleUserRound size={16} />
+                        Perfil
                       </Link>
                       <button
                         onClick={async () => {
@@ -536,9 +560,21 @@ const Header = () => {
                           gap: 8,
                           padding: "10px 12px",
                           borderRadius: 10,
+                          fontWeight: 500,
+                          fontSize: "16px",
+                          fontFamily: "Nunito Sans",
+                          color: "#dc2626",
+                          transition: "background-color 0.2s ease",
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = "#fef2f2";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = "transparent";
                         }}
                       >
-                        <LogOut size={18} /> Sair
+                        <LogOut size={16} />
+                        Sair
                       </button>
                     </div>
                   )}
