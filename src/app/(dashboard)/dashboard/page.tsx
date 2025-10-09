@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import DashboardHeader from "./components/DashboardHeader";
 
 import { useUserData } from "@/hooks/useUserData";
@@ -12,8 +14,23 @@ import {
 } from "./components/Sections";
 
 export default function DashboardHomePage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const { userData, loading, error } = useUserData();
   const { isProfileComplete } = useProfileCompletion();
+
+  // Verifica se veio do Pagar.me com sucesso e redireciona
+  useEffect(() => {
+    const payment = searchParams.get("payment");
+    const orderId = searchParams.get("order_id");
+
+    if (payment === "success" && orderId) {
+      // Redireciona para a página de sucesso com os parâmetros
+      router.replace(
+        `/subscription/success?payment=success&order_id=${orderId}`
+      );
+    }
+  }, [searchParams, router]);
 
   if (loading) {
     return (
@@ -48,13 +65,6 @@ export default function DashboardHomePage() {
       </div>
     );
   }
-
-  const user = userData
-    ? {
-        name: userData.name,
-        avatar: userData.avatar || "/Davi.png",
-      }
-    : null;
 
   return (
     <>
