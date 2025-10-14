@@ -93,10 +93,17 @@ export default function DashboardHeader({ title }: Props) {
                 </Link>
                 <button
                   onClick={async () => {
-                    window.location.href = "/";
-                    clearCache();
-                    setIsUserMenuOpen(false);
-                    await signOut();
+                    try {
+                      setIsUserMenuOpen(false);
+                      clearCache();
+                      await signOut();
+                      // Redirecionar após logout bem-sucedido
+                      window.location.href = "/";
+                    } catch (error) {
+                      console.error("Erro no logout:", error);
+                      // Mesmo com erro, redirecionar
+                      window.location.href = "/";
+                    }
                   }}
                   style={{
                     display: "flex",

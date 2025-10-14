@@ -13,10 +13,14 @@ import {
   HeroCard,
 } from "../styles";
 import { Heart, Wind, Activity, Cloud, Play } from "lucide-react";
-import { useMemo, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { UserData } from "@/hooks/useUserData";
 import ExerciseModal from "./ExerciseModal";
 import styled from "styled-components";
+import { useExerciseCompletion as useExerciseCompletionState } from "@/hooks/useSupabaseData";
+import { useExerciseCompletion } from "@/hooks/useExerciseCompletion";
+import { TodayExercise, ExerciseCompletionData } from "@/types/supabase";
+import { useDashboard } from "@/contexts/DashboardContext";
 
 // Styled Components
 const SectionTitle = styled.div`
@@ -56,6 +60,12 @@ const ExerciseCard = styled.div<{ $completed: boolean }>`
       : "0 2px 4px rgba(0, 0, 0, 0.05)"};
   transition: all 0.2s ease;
   border-color: ${({ $completed }) => ($completed ? "#22c55e" : "#e2e8f0")};
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
 `;
 
 const ExerciseContent = styled.div`
@@ -63,6 +73,10 @@ const ExerciseContent = styled.div`
   align-items: center;
   gap: 12px;
   flex: 1;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    flex: none;
+  }
 `;
 
 const ExerciseNumber = styled.div<{ $completed: boolean }>`
@@ -124,6 +138,12 @@ const ExerciseButton = styled.button<{ $completed: boolean }>`
       : "0 2px 6px rgba(59, 130, 246, 0.2)"};
   min-width: 100px;
   justify-content: center;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 14px;
+  }
 
   &:hover {
     transform: ${({ $completed }) =>
@@ -337,71 +357,83 @@ export function RemindersAndActivities({ userData }: SectionsProps) {
     });
   }
 
-  // Pacote de exercícios definido pelo profissional
-  type Exercise = {
-    id: string;
-    title: string;
-    duration: string;
-    tasks: string[];
-    videoUrl?: string;
-    dataCollectionType: "A" | "B" | "C";
-  };
+  // Buscar dados do Supabase via contexto
+  const {
+    todayExercises,
+    loading: exercisesLoading,
+    error: exercisesError,
+    summary,
+    refetch,
+  } = useDashboard();
 
-  // Pacote de exercícios do dia (3-5 exercícios por paciente)
-  const todayExercises: Exercise[] = useMemo(
-    () => [
-      {
-        id: "daily-exercise-1",
-        title: "Respiração Diafragmática",
-        duration: "8 min",
-        tasks: ["Medir frequência cardíaca inicial"],
-        dataCollectionType: "A" as const,
-      },
-      {
-        id: "daily-exercise-2",
-        title: "Caminhada Leve",
-        duration: "12 min",
-        tasks: ["Medir frequência cardíaca a cada 3 minutos"],
-        dataCollectionType: "A" as const,
-      },
-      {
-        id: "daily-exercise-3",
-        title: "Alongamento Peitoral",
-        duration: "5 min",
-        tasks: ["Relaxar entre os movimentos"],
-        dataCollectionType: "A" as const,
-      },
-      {
-        id: "daily-exercise-4",
-        title: "Exercício de Relaxamento",
-        duration: "7 min",
-        tasks: ["Anotar sensações de bem-estar"],
-        dataCollectionType: "A" as const,
-      },
-    ],
-    []
-  );
+  // Gerenciar estado de exercícios completados
+  const { markExerciseComplete } = useExerciseCompletionState();
 
-  const [completed, setCompleted] = useState<Record<string, boolean>>({});
+  // Hook para salvar conclusão no banco
+  const { isCompleting, completionError, completeExercise, clearError } =
+    useExerciseCompletion();
+
   const [toast, setToast] = useState<string | null>(null);
-  const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(
-    null
-  );
+  const [selectedExercise, setSelectedExercise] =
+    useState<TodayExercise | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleStartExercise = (exercise: Exercise) => {
+  const handleStartExercise = (exercise: TodayExercise) => {
     setSelectedExercise(exercise);
     setIsModalOpen(true);
   };
 
-  const handleCompleteExercise = (
+  const handleCompleteExercise = async (
     exerciseId: string,
     data: Record<string, string>
   ) => {
-    setCompleted((prev) => ({ ...prev, [exerciseId]: true }));
-    setToast(`Parabéns! Você concluiu: ${selectedExercise?.title}`);
-    setTimeout(() => setToast(null), 3000);
-    console.log("Dados coletados:", data);
+    if (!selectedExercise || !userData?.id) {
+      console.error("Dados insuficientes para completar exercício");
+      return;
+    }
+
+    try {
+      // Converter dados para o formato esperado
+      const completionData: ExerciseCompletionData = {
+        notes: data.notes,
+        perceived_difficulty: data.perceived_difficulty
+          ? parseInt(data.perceived_difficulty)
+          : undefined,
+        heartRate: data.heartRate,
+        oxygenSaturation: data.oxygenSaturation,
+        fatigue: data.fatigue,
+      };
+
+      // Buscar o scheduled_exercise_id se disponível
+      const scheduledExerciseId =
+        selectedExercise.scheduledExerciseId || undefined;
+
+      // Salvar no banco de dados
+      const success = await completeExercise(
+        userData.id,
+        selectedExercise.exerciseId,
+        scheduledExerciseId,
+        completionData
+      );
+
+      if (success) {
+        // Marcar como completo no estado local
+        markExerciseComplete(exerciseId, data);
+        setToast(`Parabéns! Você concluiu: ${selectedExercise.title}`);
+        setTimeout(() => setToast(null), 3000);
+        console.log("✅ Exercício concluído e salvo com sucesso!");
+
+        // Recarregar dados do dashboard para atualizar o status
+        refetch();
+      } else {
+        setToast("Erro ao salvar exercício. Tente novamente.");
+        setTimeout(() => setToast(null), 5000);
+      }
+    } catch (error) {
+      console.error("Erro ao completar exercício:", error);
+      setToast("Erro ao salvar exercício. Tente novamente.");
+      setTimeout(() => setToast(null), 5000);
+    }
   };
 
   return (
@@ -410,40 +442,82 @@ export function RemindersAndActivities({ userData }: SectionsProps) {
         <SectionTitle>🏃‍♂️ Atividade do Dia</SectionTitle>
 
         <InfoBanner>
-          Pacote de exercícios personalizado definido pelo seu profissional
+          {exercisesLoading
+            ? "Carregando exercícios..."
+            : exercisesError
+            ? "Erro ao carregar exercícios"
+            : `Pacote de exercícios personalizado (${summary.total} exercícios, ${summary.totalDuration} min total)`}
         </InfoBanner>
 
         <ExerciseContainer>
-          {todayExercises.map((exercise, index) => (
-            <ExerciseCard key={exercise.id} $completed={completed[exercise.id]}>
-              <ExerciseContent>
-                <ExerciseNumber $completed={completed[exercise.id]}>
-                  {completed[exercise.id] ? "✓" : index + 1}
-                </ExerciseNumber>
-                <ExerciseInfo>
-                  <ExerciseTitle $completed={completed[exercise.id]}>
-                    {exercise.title}
-                  </ExerciseTitle>
-                  <ExerciseDetails>
-                    <span>⏱️ {exercise.duration}</span>
-                    <span>•</span>
-                    <span>📋 {exercise.tasks.length} tarefas</span>
-                  </ExerciseDetails>
-                </ExerciseInfo>
-              </ExerciseContent>
-              <ExerciseButton
-                onClick={() => handleStartExercise(exercise)}
-                disabled={completed[exercise.id]}
-                $completed={completed[exercise.id]}
+          {exercisesLoading ? (
+            <div style={{ textAlign: "center", padding: "20px", opacity: 0.7 }}>
+              Carregando exercícios...
+            </div>
+          ) : exercisesError ? (
+            <div
+              style={{ textAlign: "center", padding: "20px", color: "#ef4444" }}
+            >
+              Erro ao carregar exercícios: {exercisesError}
+            </div>
+          ) : todayExercises.length === 0 ? (
+            <div style={{ textAlign: "center", padding: "20px", opacity: 0.7 }}>
+              Nenhum exercício agendado para hoje
+            </div>
+          ) : (
+            todayExercises.map((exercise, index) => (
+              <ExerciseCard
+                key={exercise.id}
+                $completed={exercise.isCompleted}
+                data-testid="exercise-card"
               >
-                <Play size={14} />
-                {completed[exercise.id] ? "Concluído" : "Iniciar"}
-              </ExerciseButton>
-            </ExerciseCard>
-          ))}
+                <ExerciseContent>
+                  <ExerciseNumber $completed={exercise.isCompleted}>
+                    {exercise.isCompleted ? "✓" : index + 1}
+                  </ExerciseNumber>
+                  <ExerciseInfo>
+                    <ExerciseTitle $completed={exercise.isCompleted}>
+                      {exercise.title}
+                    </ExerciseTitle>
+                    <ExerciseDetails>
+                      <span>⏱️ {exercise.duration}</span>
+                      <span>•</span>
+                      <span>📋 {exercise.tasks.length} tarefas</span>
+                      {exercise.sets && exercise.reps && (
+                        <>
+                          <span>•</span>
+                          <span>
+                            💪 {exercise.sets}x{exercise.reps}
+                          </span>
+                        </>
+                      )}
+                    </ExerciseDetails>
+                  </ExerciseInfo>
+                </ExerciseContent>
+                <ExerciseButton
+                  onClick={() => handleStartExercise(exercise)}
+                  disabled={exercise.isCompleted || isCompleting}
+                  $completed={exercise.isCompleted}
+                  data-testid="exercise-button"
+                >
+                  <Play size={14} />
+                  {exercise.isCompleted
+                    ? "Concluído"
+                    : isCompleting
+                    ? "Salvando..."
+                    : "Iniciar"}
+                </ExerciseButton>
+              </ExerciseCard>
+            ))
+          )}
         </ExerciseContainer>
 
         {toast && <Toast aria-live="polite">{toast}</Toast>}
+        {completionError && (
+          <Toast style={{ background: "#ef4444" }} aria-live="polite">
+            {completionError}
+          </Toast>
+        )}
 
         <ExerciseModal
           exercise={selectedExercise}
@@ -451,6 +525,7 @@ export function RemindersAndActivities({ userData }: SectionsProps) {
           onClose={() => {
             setIsModalOpen(false);
             setSelectedExercise(null);
+            clearError();
           }}
           onComplete={handleCompleteExercise}
         />
@@ -475,6 +550,9 @@ export function RemindersAndActivities({ userData }: SectionsProps) {
 }
 
 export function Infographics({ userData }: SectionsProps) {
+  // Buscar dados do dashboard via contexto
+  const { activePlan, loading: planLoading } = useDashboard();
+
   // Calcular IMC se temos peso e altura
   const calculateBMI = () => {
     if (userData?.weight && userData?.height) {
@@ -525,15 +603,35 @@ export function Infographics({ userData }: SectionsProps) {
         <div>
           <NextExerciseCard>
             <div style={{ fontWeight: 800, marginBottom: 8 }}>
-              Próximo Exercício
+              {activePlan ? "Plano Ativo" : "Próximo Exercício"}
             </div>
-            <div>Hoje às 15:00</div>
-            <div style={{ fontWeight: 700, marginTop: 6 }}>
-              {userData?.nextExercise?.title || "Exercícios Respiratórios"}
-            </div>
-            <div style={{ opacity: 0.8 }}>
-              Duração: {userData?.nextExercise?.duration || "20 minutos"}
-            </div>
+            {activePlan ? (
+              <>
+                <div style={{ fontSize: 14, opacity: 0.8, marginBottom: 4 }}>
+                  {activePlan.plan_name}
+                </div>
+                <div style={{ fontWeight: 700, marginTop: 6 }}>
+                  Iniciado em:{" "}
+                  {new Date(activePlan.start_date).toLocaleDateString("pt-BR")}
+                </div>
+                <div style={{ opacity: 0.8 }}>
+                  {activePlan.notes ||
+                    "Plano personalizado pelo seu profissional"}
+                </div>
+              </>
+            ) : planLoading ? (
+              <div style={{ opacity: 0.7 }}>Carregando plano...</div>
+            ) : (
+              <>
+                <div>Hoje às 15:00</div>
+                <div style={{ fontWeight: 700, marginTop: 6 }}>
+                  {userData?.nextExercise?.title || "Exercícios Respiratórios"}
+                </div>
+                <div style={{ opacity: 0.8 }}>
+                  Duração: {userData?.nextExercise?.duration || "20 minutos"}
+                </div>
+              </>
+            )}
           </NextExerciseCard>
         </div>
       </GridTwoThirds>

@@ -49,6 +49,16 @@ export const useUserData = () => {
         return;
       }
 
+      // Verificar se a sessão ainda é válida
+      if (
+        session.expires_at &&
+        new Date(session.expires_at * 1000) <= new Date()
+      ) {
+        console.warn("Sessão expirada, redirecionando para login");
+        window.location.href = "/auth";
+        return;
+      }
+
       // Verificar cache primeiro
       const cacheKey = user.id;
       const cachedData = userDataCache.get(cacheKey);
@@ -110,7 +120,25 @@ export const useUserData = () => {
         clearTimeout(timeoutId);
 
         if (!response.ok) {
-          throw new Error("Falha ao carregar dados do usuário");
+          const errorData = await response.json().catch(() => ({}));
+
+          // Se for erro de autenticação, limpar cache e redirecionar
+          if (response.status === 401) {
+            console.warn("Sessão expirada, limpando cache");
+            userDataCache.clear();
+            requestTimestamps.clear();
+            hasInitialized.current = false;
+
+            // Se for erro de sessão missing, forçar logout
+            if (errorData.error?.includes("Auth session missing")) {
+              window.location.href = "/auth";
+              return;
+            }
+          }
+
+          throw new Error(
+            errorData.error || "Falha ao carregar dados do usuário"
+          );
         }
 
         const data = await response.json();

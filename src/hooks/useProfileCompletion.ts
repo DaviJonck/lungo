@@ -41,6 +41,16 @@ export const useProfileCompletion = () => {
         return;
       }
 
+      // Verificar se a sessão ainda é válida
+      if (
+        session.expires_at &&
+        new Date(session.expires_at * 1000) <= new Date()
+      ) {
+        console.warn("Sessão expirada, redirecionando para login");
+        window.location.href = "/auth";
+        return;
+      }
+
       // Verificar cache primeiro
       const cacheKey = `profile_${user.id}`;
       const cachedData = profileCache.get(cacheKey);
@@ -104,7 +114,27 @@ export const useProfileCompletion = () => {
         clearTimeout(timeoutId);
 
         if (!response.ok) {
-          console.error("Erro ao buscar perfil via API:", response.status);
+          const errorData = await response.json().catch(() => ({}));
+          console.error(
+            "Erro ao buscar perfil via API:",
+            response.status,
+            errorData
+          );
+
+          // Se for erro de autenticação, limpar cache
+          if (response.status === 401) {
+            console.warn("Sessão expirada, limpando cache do perfil");
+            profileCache.clear();
+            requestTimestamps.clear();
+            hasInitialized.current = false;
+
+            // Se for erro de sessão missing, forçar logout
+            if (errorData.error?.includes("Auth session missing")) {
+              window.location.href = "/auth";
+              return;
+            }
+          }
+
           setIsProfileComplete(false);
           setLoading(false);
           return;

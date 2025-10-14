@@ -12,6 +12,7 @@ import {
   RemindersAndActivities,
   Infographics,
 } from "./components/Sections";
+import { DashboardProvider } from "@/contexts/DashboardContext";
 
 export default function DashboardHomePage() {
   const router = useRouter();
@@ -70,9 +71,11 @@ export default function DashboardHomePage() {
     <>
       <DashboardHeader title="Home" />
       {isProfileComplete === false && <CompleteProfileBanner />}
-      <SummaryCards userData={userData} />
-      <RemindersAndActivities userData={userData} />
-      <Infographics userData={userData} />
+      <DashboardProvider userData={userData}>
+        <SummaryCards userData={userData} />
+        <RemindersAndActivities userData={userData} />
+        <Infographics userData={userData} />
+      </DashboardProvider>
     </>
   );
 }

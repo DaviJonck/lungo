@@ -33,7 +33,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      if (error) {
+        console.error("Erro ao obter sessão inicial:", error);
+        setSession(null);
+        setUser(null);
+        setLoading(false);
+        return;
+      }
+
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
@@ -42,10 +50,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log(
+        "Auth state change:",
+        event,
+        session?.user?.id ? "User logged in" : "User logged out"
+      );
+
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+
+      // Se o usuário fez logout, limpar dados locais
+      if (event === "SIGNED_OUT" || !session) {
+        // Limpar localStorage se necessário
+        if (typeof window !== "undefined") {
+          localStorage.removeItem(
+            "sb-" +
+              process.env.NEXT_PUBLIC_SUPABASE_URL?.split("//")[1]?.split(
+                "."
+              )[0] +
+              "-auth-token"
+          );
+        }
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -97,10 +125,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const signOut = async () => {
     try {
+      // Limpar dados locais antes do logout
+      if (typeof window !== "undefined") {
+        // Limpar cache dos hooks
+        localStorage.removeItem("userDataCache");
+        localStorage.removeItem("profileCache");
+        localStorage.removeItem("requestTimestamps");
+
+        // Limpar localStorage do Supabase
+        const supabaseKey =
+          process.env.NEXT_PUBLIC_SUPABASE_URL?.split("//")[1]?.split(".")[0];
+        if (supabaseKey) {
+          localStorage.removeItem(`sb-${supabaseKey}-auth-token`);
+        }
+      }
+
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
+
+      // Forçar limpeza do estado local
+      setSession(null);
+      setUser(null);
     } catch (error) {
       console.error("Error signing out:", error);
+      // Mesmo com erro, limpar estado local
+      setSession(null);
+      setUser(null);
       throw error;
     }
   };

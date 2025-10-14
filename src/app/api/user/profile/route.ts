@@ -25,12 +25,20 @@ export async function GET(request: NextRequest) {
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return NextResponse.json(
-        { error: "Token de autorização necessário" },
+        { error: "Auth session missing!" },
         { status: 401 }
       );
     }
 
     const token = authHeader.split(" ")[1];
+
+    // Validar se o token não está vazio
+    if (!token || token.trim() === "") {
+      return NextResponse.json(
+        { error: "Auth session missing!" },
+        { status: 401 }
+      );
+    }
 
     // Criar cliente Supabase com o token de acesso (usando anon key)
     const supabaseWithToken = createClient(supabaseUrl!, supabaseAnonKey!, {
@@ -48,6 +56,18 @@ export async function GET(request: NextRequest) {
 
     if (authError) {
       console.error("Erro de autenticação:", authError);
+
+      // Tratar diferentes tipos de erro de autenticação
+      if (
+        authError.message.includes("JWT") ||
+        authError.message.includes("token")
+      ) {
+        return NextResponse.json(
+          { error: "Auth session missing!" },
+          { status: 401 }
+        );
+      }
+
       return NextResponse.json(
         { error: "Erro de autenticação: " + authError.message },
         { status: 401 }
@@ -56,7 +76,7 @@ export async function GET(request: NextRequest) {
 
     if (!user) {
       return NextResponse.json(
-        { error: "Usuário não autenticado" },
+        { error: "Auth session missing!" },
         { status: 401 }
       );
     }

@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import { X, Play, Clock, Heart, Activity } from "lucide-react";
 import { usePersistentExercise } from "@/hooks/usePersistentExercise";
+import { useResponsive } from "@/hooks/useResponsive";
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -43,6 +44,14 @@ const ModalContent = styled.div`
     margin: 20px;
     width: calc(100% - 40px);
   }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    height: 95vh;
+    max-height: 95vh;
+    margin: 10px;
+    width: calc(100% - 20px);
+    border-radius: 16px;
+  }
 `;
 
 const MainContent = styled.div`
@@ -54,6 +63,11 @@ const MainContent = styled.div`
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    padding: 20px;
+    gap: 20px;
+  }
 `;
 
 const CloseButton = styled.button`
@@ -90,6 +104,10 @@ const ExerciseTitle = styled.h2`
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    font-size: 24px;
+  }
 `;
 
 const TaskList = styled.ul`
@@ -187,6 +205,11 @@ const CountdownContainer = styled.div`
   gap: 24px;
   padding: 40px;
   text-align: center;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    gap: 16px;
+    padding: 20px;
+  }
 `;
 
 const CountdownNumber = styled.div<{ $isActive: boolean }>`
@@ -195,6 +218,11 @@ const CountdownNumber = styled.div<{ $isActive: boolean }>`
   color: ${({ $isActive }) => ($isActive ? "#2a7ea5" : "#e5e7eb")};
   transition: all 0.3s ease;
   transform: ${({ $isActive }) => ($isActive ? "scale(1.2)" : "scale(1)")};
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    font-size: 80px;
+    transform: ${({ $isActive }) => ($isActive ? "scale(1.1)" : "scale(1)")};
+  }
 `;
 
 const TimerContainer = styled.div`
@@ -207,6 +235,12 @@ const TimerContainer = styled.div`
   border-radius: 20px;
   border: 2px solid #bae6fd;
   box-shadow: 0 8px 32px rgba(14, 165, 233, 0.1);
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    gap: 16px;
+    padding: 20px;
+    border-radius: 16px;
+  }
 `;
 
 const TimerDisplay = styled.div`
@@ -215,6 +249,10 @@ const TimerDisplay = styled.div`
   color: #0ea5e9;
   font-family: "Courier New", monospace;
   text-shadow: 0 2px 4px rgba(14, 165, 233, 0.2);
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    font-size: 48px;
+  }
 `;
 
 const DataCollectionContainer = styled.div`
@@ -227,6 +265,11 @@ const DataInputsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 16px;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
 `;
 
 const DataInputGroup = styled.div`
@@ -322,6 +365,7 @@ export default function ExerciseModal({
   const [showAlert, setShowAlert] = useState(false);
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const { isMobile } = useResponsive();
 
   const { exerciseState, startExercise, updateExerciseState, clearExercise } =
     usePersistentExercise();
@@ -486,7 +530,7 @@ export default function ExerciseModal({
   const isStarted = isCurrentExercise && exerciseState?.isStarted;
 
   return (
-    <ModalOverlay onClick={handleClose}>
+    <ModalOverlay onClick={handleClose} data-testid="exercise-modal">
       <ModalContent onClick={(e) => e.stopPropagation()}>
         <CloseButton onClick={handleClose}>
           <X size={20} />
@@ -499,15 +543,18 @@ export default function ExerciseModal({
             <CountdownContainer>
               <div
                 style={{
-                  fontSize: 24,
+                  fontSize: isMobile ? 18 : 24,
                   fontWeight: 600,
                   color: "#374151",
-                  marginBottom: 20,
+                  marginBottom: isMobile ? 16 : 20,
                 }}
               >
                 Preparando para iniciar...
               </div>
-              <CountdownNumber $isActive={countdown > 0}>
+              <CountdownNumber
+                $isActive={countdown > 0}
+                data-testid="countdown"
+              >
                 {countdown}
               </CountdownNumber>
             </CountdownContainer>
@@ -516,9 +563,9 @@ export default function ExerciseModal({
               <div>
                 <h3
                   style={{
-                    fontSize: 18,
+                    fontSize: isMobile ? 16 : 18,
                     fontWeight: 600,
-                    marginBottom: 16,
+                    marginBottom: isMobile ? 12 : 16,
                     color: "#374151",
                     textAlign: "center",
                   }}
@@ -544,7 +591,7 @@ export default function ExerciseModal({
             <DataCollectionContainer>
               {isCurrentExercise && (
                 <TimerContainer>
-                  <TimerDisplay>
+                  <TimerDisplay data-testid="timer">
                     {formatTime(exerciseState?.timeRemaining || 0)}
                   </TimerDisplay>
                 </TimerContainer>
@@ -560,9 +607,9 @@ export default function ExerciseModal({
               <div>
                 <h3
                   style={{
-                    fontSize: 18,
+                    fontSize: isMobile ? 16 : 18,
                     fontWeight: 600,
-                    marginBottom: 20,
+                    marginBottom: isMobile ? 16 : 20,
                     color: "#374151",
                     textAlign: "center",
                   }}

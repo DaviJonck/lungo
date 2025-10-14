@@ -11,14 +11,27 @@ import {
   BottomNavItem,
   NavItemIcon,
 } from "../styles";
-import { Home, NotebookPen, Dumbbell, Book, User } from "lucide-react";
+import {
+  Home,
+  NotebookPen,
+  Dumbbell,
+  Book,
+  User,
+  Crown,
+  CheckCircle,
+} from "lucide-react";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useUserData } from "@/hooks/useUserData";
+import { useUserPlanStatus } from "@/hooks/useUserPlanStatus";
 
 export default function Sidebar() {
   const router = useRouter();
   const pathname = usePathname();
+  const { userData } = useUserData();
+  const { hasActivePlan } = useUserPlanStatus(userData?.id || "");
+
   const isHomeActive = pathname === "/dashboard" || pathname === "/";
   const isDiaryActive = pathname?.startsWith("/dashboard/diary");
   const isExercisesActive = pathname?.startsWith("/dashboard/exercises");
@@ -76,29 +89,69 @@ export default function Sidebar() {
           </li>
         </NavList>
         <ProCard>
-          <div
-            style={{
-              fontWeight: 600,
-              fontSize: "15px",
-              color: "#1e293b",
-              marginBottom: "4px",
-            }}
-          >
-            🚀 Upgrade para PRO
-          </div>
-          <div
-            style={{
-              fontSize: "12px",
-              color: "#64748b",
-              lineHeight: "1.4",
-              marginBottom: "12px",
-            }}
-          >
-            Acesso completo a todos os recursos
-          </div>
-          <ProButton onClick={() => router.push("/subscription")}>
-            Assinar Agora
-          </ProButton>
+          {hasActivePlan ? (
+            <>
+              <div
+                style={{
+                  fontWeight: 600,
+                  fontSize: "15px",
+                  color: "#1e293b",
+                  marginBottom: "4px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                }}
+              >
+                Parabéns! Você já é um usuário Plus
+              </div>
+              <div
+                style={{
+                  fontSize: "12px",
+                  color: "#64748b",
+                  lineHeight: "1.4",
+                  marginBottom: "12px",
+                }}
+              >
+                Aproveite todos os recursos disponíveis
+              </div>
+              <ProButton
+                onClick={() => router.push("/dashboard/profile")}
+                style={{
+                  background:
+                    "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                }}
+              >
+                <CheckCircle size={14} style={{ marginRight: "6px" }} />
+                Ver Perfil
+              </ProButton>
+            </>
+          ) : (
+            <>
+              <div
+                style={{
+                  fontWeight: 600,
+                  fontSize: "15px",
+                  color: "#1e293b",
+                  marginBottom: "4px",
+                }}
+              >
+                🚀 Upgrade para PRO
+              </div>
+              <div
+                style={{
+                  fontSize: "12px",
+                  color: "#64748b",
+                  lineHeight: "1.4",
+                  marginBottom: "12px",
+                }}
+              >
+                Acesso completo a todos os recursos
+              </div>
+              <ProButton onClick={() => router.push("/subscription")}>
+                Assinar Agora
+              </ProButton>
+            </>
+          )}
         </ProCard>
       </SidebarRoot>
       <BottomNav>

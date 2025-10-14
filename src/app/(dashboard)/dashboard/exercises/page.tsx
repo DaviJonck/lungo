@@ -4,18 +4,19 @@ import { useMemo, useState } from "react";
 import styled from "styled-components";
 import { Card } from "../styles";
 import DashboardHeader from "../components/DashboardHeader";
-import { Search, Play, Clock, Target, TrendingUp, Star } from "lucide-react";
+import {
+  Search,
+  Play,
+  Clock,
+  Target,
+  TrendingUp,
+  Star,
+  Loader2,
+  X,
+} from "lucide-react";
+import { useExercises } from "@/hooks/useExercises";
 
-type Category = "respiratorios" | "aerobicos";
-
-type Exercise = {
-  id: string;
-  name: string;
-  description: string;
-  category: Category;
-  videoUrl?: string;
-  thumbnailUrl?: string;
-};
+type Category = "todos" | "respiratorios" | "aerobicos" | "força";
 
 const PageContainer = styled.div`
   display: flex;
@@ -456,146 +457,292 @@ const ScrollArea = styled.div`
   }
 `;
 
+const LoadingContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  gap: 1rem;
+`;
+
+const LoadingText = styled.div`
+  color: #64748b;
+  font-size: 1rem;
+  font-weight: 500;
+`;
+
+const ErrorContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  gap: 1rem;
+  text-align: center;
+`;
+
+const ErrorText = styled.div`
+  color: #ef4444;
+  font-size: 1rem;
+  font-weight: 500;
+`;
+
+const RetryButton = styled.button`
+  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+  color: white;
+  border: none;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+  }
+`;
+
+// Modal Styles
+const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+`;
+
+const ModalContent = styled.div`
+  background: white;
+  border-radius: 1.5rem;
+  max-width: 800px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+`;
+
+const CloseButton = styled.button`
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(0, 0, 0, 0.5);
+  border: none;
+  border-radius: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: white;
+  z-index: 10;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.7);
+    transform: scale(1.1);
+  }
+`;
+
+const VideoContainer = styled.div`
+  width: 100%;
+  height: 300px;
+  background: #000;
+  border-radius: 1.5rem 1.5rem 0 0;
+  overflow: hidden;
+  position: relative;
+`;
+
+const Video = styled.video`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+`;
+
+const VideoPlaceholder = styled.div`
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  font-size: 1.1rem;
+  font-weight: 500;
+`;
+
+const ModalBody = styled.div`
+  padding: 2rem;
+`;
+
+const ModalTitle = styled.h2`
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 1rem 0;
+`;
+
+const ModalDescription = styled.p`
+  color: #64748b;
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0 0 1.5rem 0;
+`;
+
+const ExerciseInfo = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+`;
+
+const InfoCard = styled.div`
+  background: #f8fafc;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+`;
+
+const InfoLabel = styled.div`
+  font-size: 0.875rem;
+  color: #64748b;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+`;
+
+const InfoValue = styled.div`
+  font-size: 1rem;
+  color: #1e293b;
+  font-weight: 600;
+`;
+
+const ModalActions = styled.div`
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+`;
+
+const ActionButton = styled.button<{ $variant?: "primary" | "secondary" }>`
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+
+  ${({ $variant = "primary" }) =>
+    $variant === "primary"
+      ? `
+        background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+        color: white;
+        
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+        }
+      `
+      : `
+        background: #f1f5f9;
+        color: #64748b;
+        border: 1px solid #e2e8f0;
+        
+        &:hover {
+          background: #e2e8f0;
+          transform: translateY(-1px);
+        }
+      `}
+`;
+
+// Função para converter tipo do Supabase para categoria da UI
+const mapExerciseTypeToCategory = (type: string): Category => {
+  switch (type) {
+    case "RESPIRATORY":
+      return "respiratorios";
+    case "AEROBIC":
+      return "aerobicos";
+    case "STRENGTH":
+      return "força";
+    default:
+      return "respiratorios";
+  }
+};
+
+// Função para obter URL de thumbnail baseada no tipo
+const getThumbnailUrl = (type: string): string => {
+  switch (type) {
+    case "RESPIRATORY":
+      return "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&q=70";
+    case "AEROBIC":
+      return "https://images.unsplash.com/photo-1536012441664-1428b1b08083?w=800&q=70";
+    case "STRENGTH":
+      return "https://images.unsplash.com/photo-1509395176047-4a66953fd231?w=800&q=70";
+    default:
+      return "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&q=70";
+  }
+};
+
+interface ExerciseWithCategory {
+  id: number;
+  name: string;
+  description?: string;
+  type: string;
+  videoUrl?: string;
+  category: Category;
+  thumbnailUrl: string;
+}
+
 export default function ExercisesPage() {
-  const [category, setCategory] = useState<Category>("respiratorios");
+  const [category, setCategory] = useState<Category>("todos");
   const [query, setQuery] = useState("");
-  const allExercises: Exercise[] = useMemo(
-    () => [
-      {
-        id: "f1",
-        name: "Respiração Diafragmática",
-        description:
-          "Fortalece o músculo diafragma e melhora a ventilação pulmonar.",
-        category: "respiratorios",
-        thumbnailUrl:
-          "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&q=70",
-      },
-      {
-        id: "f2",
-        name: "Exercícios de Tosse Dirigida",
-        description:
-          "Técnicas para facilitar a expectoração e limpeza das vias aéreas.",
-        category: "respiratorios",
-        thumbnailUrl:
-          "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=800&q=70",
-      },
-      {
-        id: "f3",
-        name: "Respiração Labial",
-        description: "Controla o fluxo expiratório e melhora a troca gasosa.",
-        category: "respiratorios",
-        thumbnailUrl:
-          "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&q=70",
-      },
-      {
-        id: "f4",
-        name: "Exercícios de Expansão Torácica",
-        description:
-          "Aumenta a mobilidade da caixa torácica e capacidade pulmonar.",
-        category: "respiratorios",
-        thumbnailUrl:
-          "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=800&q=70",
-      },
-      {
-        id: "f5",
-        name: "Drenagem Postural",
-        description:
-          "Facilita a drenagem de secreções por meio de posicionamento.",
-        category: "respiratorios",
-        thumbnailUrl:
-          "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&q=70",
-      },
-      {
-        id: "f6",
-        name: "Exercícios de Ventilação Dirigida",
-        description: "Melhora a distribuição do ar nos pulmões.",
-        category: "respiratorios",
-        thumbnailUrl:
-          "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=800&q=70",
-      },
-      {
-        id: "f7",
-        name: "Respiração com Resistência",
-        description:
-          "Fortalece os músculos respiratórios com carga progressiva.",
-        category: "respiratorios",
-        thumbnailUrl:
-          "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&q=70",
-      },
-      {
-        id: "f8",
-        name: "Exercícios de Relaxamento",
-        description:
-          "Reduz tensão muscular e melhora a eficiência respiratória.",
-        category: "respiratorios",
-        thumbnailUrl:
-          "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=800&q=70",
-      },
-      {
-        id: "a1",
-        name: "Caminhada Terapêutica",
-        description:
-          "Atividade aeróbica de baixo impacto para reabilitação pulmonar.",
-        category: "aerobicos",
-        thumbnailUrl:
-          "https://images.unsplash.com/photo-1536012441664-1428b1b08083?w=800&q=70",
-      },
-      {
-        id: "a2",
-        name: "Ciclismo Estacionário",
-        description:
-          "Melhora resistência cardiorrespiratória com baixo impacto.",
-        category: "aerobicos",
-        thumbnailUrl:
-          "https://images.unsplash.com/photo-1509395176047-4a66953fd231?w=800&q=70",
-      },
-      {
-        id: "a3",
-        name: "Subida de Escadas Controlada",
-        description: "Aumenta condicionamento cardiovascular e força muscular.",
-        category: "aerobicos",
-        thumbnailUrl:
-          "https://images.unsplash.com/photo-1520975954732-35dd22a55801?w=800&q=70",
-      },
-      {
-        id: "a4",
-        name: "Exercícios de Coordenação",
-        description: "Combina movimento com respiração para melhor eficiência.",
-        category: "aerobicos",
-        thumbnailUrl:
-          "https://images.unsplash.com/photo-1596357395104-5b5d89b2c541?w=800&q=70",
-      },
-      {
-        id: "a5",
-        name: "Hidroterapia",
-        description: "Exercícios aquáticos para reabilitação pulmonar.",
-        category: "aerobicos",
-        thumbnailUrl:
-          "https://images.unsplash.com/photo-1536012441664-1428b1b08083?w=800&q=70",
-      },
-      {
-        id: "a6",
-        name: "Treinamento Intervalado",
-        description:
-          "Alterna períodos de esforço e recuperação para condicionamento.",
-        category: "aerobicos",
-        thumbnailUrl:
-          "https://images.unsplash.com/photo-1509395176047-4a66953fd231?w=800&q=70",
-      },
-    ],
-    []
-  );
+  const [selectedExercise, setSelectedExercise] =
+    useState<ExerciseWithCategory | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Buscar exercícios do banco de dados
+  const { exercises, loading, error, refetch } = useExercises();
+
+  // Converter exercícios do Supabase para formato da UI
+  const allExercises = useMemo(() => {
+    return exercises.map((exercise) => ({
+      ...exercise,
+      category: mapExerciseTypeToCategory(exercise.type),
+      thumbnailUrl: getThumbnailUrl(exercise.type),
+    }));
+  }, [exercises]);
 
   const filtered = useMemo(() => {
-    const byCategory = allExercises.filter((e) => e.category === category);
+    const byCategory =
+      category === "todos"
+        ? allExercises
+        : allExercises.filter((e) => e.category === category);
+
     if (!query.trim()) return byCategory;
     const q = query.trim().toLowerCase();
     return byCategory.filter(
       (e) =>
         e.name.toLowerCase().includes(q) ||
-        e.description.toLowerCase().includes(q)
+        (e.description && e.description.toLowerCase().includes(q))
     );
   }, [allExercises, category, query]);
+
+  const handleOpenModal = (exercise: ExerciseWithCategory) => {
+    setSelectedExercise(exercise);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedExercise(null);
+    setIsModalOpen(false);
+  };
 
   return (
     <>
@@ -634,11 +781,25 @@ export default function ExercisesPage() {
 
           <FiltersRow>
             <Tab
+              $active={category === "todos"}
+              onClick={() => setCategory("todos")}
+            >
+              <Star size={16} />
+              Todos
+            </Tab>
+            <Tab
               $active={category === "respiratorios"}
               onClick={() => setCategory("respiratorios")}
             >
               <Target size={16} />
               Respiratórios
+            </Tab>
+            <Tab
+              $active={category === "força"}
+              onClick={() => setCategory("força")}
+            >
+              <Target size={16} />
+              Força
             </Tab>
             <Tab
               $active={category === "aerobicos"}
@@ -662,47 +823,161 @@ export default function ExercisesPage() {
 
         <Card>
           <ScrollArea>
-            <ExercisesGrid>
-              {filtered.map((ex) => (
-                <ExerciseCard key={ex.id}>
-                  <CardImage $src={ex.thumbnailUrl}>
-                    <PlayButton>
-                      <PlayIcon />
-                    </PlayButton>
-                  </CardImage>
-                  <CardContent>
-                    <CardHeader>
-                      <CardTitle>{ex.name}</CardTitle>
-                      <CategoryBadge $category={ex.category}>
-                        {ex.category === "respiratorios"
-                          ? "Respiratório"
-                          : "Aeróbico"}
-                      </CategoryBadge>
-                    </CardHeader>
-                    <CardDescription>{ex.description}</CardDescription>
-                    <CardFooter>
-                      <ExerciseStats>
-                        <Stat>
-                          <Clock size={16} />
-                          15 min
-                        </Stat>
-                        <Stat>
-                          <Target size={16} />
-                          Intermediário
-                        </Stat>
-                      </ExerciseStats>
-                    </CardFooter>{" "}
-                    <StartButton>
-                      <Play size={16} />
-                      Iniciar
-                    </StartButton>
-                  </CardContent>
-                </ExerciseCard>
-              ))}
-            </ExercisesGrid>
+            {loading ? (
+              <LoadingContainer>
+                <Loader2 size={48} className="animate-spin" color="#3b82f6" />
+                <LoadingText>Carregando exercícios...</LoadingText>
+              </LoadingContainer>
+            ) : error ? (
+              <ErrorContainer>
+                <ErrorText>Erro ao carregar exercícios: {error}</ErrorText>
+                <RetryButton onClick={refetch}>Tentar Novamente</RetryButton>
+              </ErrorContainer>
+            ) : filtered.length === 0 ? (
+              <ErrorContainer>
+                <ErrorText>
+                  {query.trim()
+                    ? `Nenhum exercício encontrado para "${query}"`
+                    : `Nenhum exercício disponível na categoria ${category}`}
+                </ErrorText>
+                {query.trim() && (
+                  <RetryButton onClick={() => setQuery("")}>
+                    Limpar Busca
+                  </RetryButton>
+                )}
+              </ErrorContainer>
+            ) : (
+              <ExercisesGrid>
+                {filtered.map((ex) => (
+                  <ExerciseCard key={ex.id} onClick={() => handleOpenModal(ex)}>
+                    <CardImage $src={ex.thumbnailUrl}>
+                      <PlayButton>
+                        <PlayIcon />
+                      </PlayButton>
+                    </CardImage>
+                    <CardContent>
+                      <CardHeader>
+                        <CardTitle>{ex.name}</CardTitle>
+                        <CategoryBadge $category={ex.category}>
+                          {ex.category === "respiratorios"
+                            ? "Respiratório"
+                            : ex.category === "força"
+                            ? "Força"
+                            : "Aeróbico"}
+                        </CategoryBadge>
+                      </CardHeader>
+                      <CardDescription>
+                        {ex.description || "Descrição não disponível"}
+                      </CardDescription>
+                      <CardFooter>
+                        <ExerciseStats>
+                          <Stat>
+                            <Clock size={16} />
+                            15 min
+                          </Stat>
+                          <Stat>
+                            <Target size={16} />
+                            Intermediário
+                          </Stat>
+                        </ExerciseStats>
+                      </CardFooter>
+                      <StartButton>
+                        <Play size={16} />
+                        Ver Detalhes
+                      </StartButton>
+                    </CardContent>
+                  </ExerciseCard>
+                ))}
+              </ExercisesGrid>
+            )}
           </ScrollArea>
         </Card>
       </PageContainer>
+
+      {/* Modal de Detalhes do Exercício */}
+      {isModalOpen && selectedExercise && (
+        <ModalOverlay onClick={handleCloseModal}>
+          <ModalContent onClick={(e) => e.stopPropagation()}>
+            <CloseButton onClick={handleCloseModal}>
+              <X size={20} />
+            </CloseButton>
+
+            <VideoContainer>
+              {selectedExercise.videoUrl ? (
+                <Video controls poster={selectedExercise.thumbnailUrl}>
+                  <source src={selectedExercise.videoUrl} type="video/mp4" />
+                  Seu navegador não suporta vídeos HTML5.
+                </Video>
+              ) : (
+                <VideoPlaceholder>
+                  <div style={{ textAlign: "center" }}>
+                    <Play
+                      size={48}
+                      color="#94a3b8"
+                      style={{ marginBottom: "1rem" }}
+                    />
+                    <div>Vídeo não disponível</div>
+                  </div>
+                </VideoPlaceholder>
+              )}
+            </VideoContainer>
+
+            <ModalBody>
+              <ModalTitle>{selectedExercise.name}</ModalTitle>
+
+              <ModalDescription>
+                {selectedExercise.description ||
+                  "Descrição não disponível para este exercício."}
+              </ModalDescription>
+
+              <ExerciseInfo>
+                <InfoCard>
+                  <InfoLabel>Tipo</InfoLabel>
+                  <InfoValue>
+                    {selectedExercise.category === "respiratorios"
+                      ? "Respiratório"
+                      : selectedExercise.category === "força"
+                      ? "Força"
+                      : "Aeróbico"}
+                  </InfoValue>
+                </InfoCard>
+
+                <InfoCard>
+                  <InfoLabel>Duração</InfoLabel>
+                  <InfoValue>15 minutos</InfoValue>
+                </InfoCard>
+
+                <InfoCard>
+                  <InfoLabel>Nível</InfoLabel>
+                  <InfoValue>Intermediário</InfoValue>
+                </InfoCard>
+
+                <InfoCard>
+                  <InfoLabel>ID do Exercício</InfoLabel>
+                  <InfoValue>#{selectedExercise.id}</InfoValue>
+                </InfoCard>
+              </ExerciseInfo>
+
+              <ModalActions>
+                <ActionButton $variant="secondary" onClick={handleCloseModal}>
+                  Fechar
+                </ActionButton>
+                <ActionButton
+                  $variant="primary"
+                  onClick={() => {
+                    // Aqui você pode implementar a lógica para iniciar o exercício
+                    console.log("Iniciar exercício:", selectedExercise.name);
+                    handleCloseModal();
+                  }}
+                >
+                  <Play size={16} style={{ marginRight: "0.5rem" }} />
+                  Iniciar Exercício
+                </ActionButton>
+              </ModalActions>
+            </ModalBody>
+          </ModalContent>
+        </ModalOverlay>
+      )}
     </>
   );
 }
