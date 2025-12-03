@@ -1,6 +1,14 @@
 import styled from "styled-components";
 import Image from "next/image";
 import { useState, useRef } from "react";
+import {
+  ShoppingCart,
+  User,
+  Target,
+  Play,
+  TrendingUp,
+  Calendar,
+} from "lucide-react";
 
 const Section = styled.section`
   background-color: ${({ theme }) => theme.colors.disabledLight};
@@ -61,41 +69,89 @@ const StepsGrid = styled.div`
   }
 `;
 
-const StepCard = styled.div<{ transform: string }>`
-  background-color: rgba(242, 248, 245, 0.8);
+const StepCard = styled.div<{ transform: string; $gradient: string }>`
+  background: ${({ $gradient }) => $gradient};
   padding: ${({ theme }) => theme.spacing.xl};
-  box-shadow: 0 0px 5px 0px rgba(31, 38, 135, 0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1), 0 4px 12px rgba(0, 0, 0, 0.08);
   position: relative;
   z-index: 3;
-  max-width: 320px;
+  max-width: 360px;
   width: 100%;
   text-align: left;
   margin: 0 auto;
-  backdrop-filter: blur(17px) saturate(200%);
-  -webkit-backdrop-filter: blur(17px) saturate(200%);
-  background-color: rgba(255, 255, 255, 0.63);
-  border-radius: 12px;
-  border: 1px solid rgba(209, 213, 219, 0.3);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
   transform: ${({ transform }) => transform};
-  transition: transform 0.1s ease-out;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.5),
+      transparent
+    );
+  }
+
+  &:hover {
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15), 0 8px 16px rgba(0, 0, 0, 0.1);
+    transform: ${({ transform }) => transform} translateY(-4px);
+  }
 `;
 
-const StepNumber = styled.h3`
-  color: ${({ theme }) => theme.colors.secondaryDarker};
-  font-size: ${({ theme }) => theme.fontSizes.lg};
-  font-weight: 700;
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
-  line-height: 1.3;
+const StepHeader = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+`;
+
+const StepIconContainer = styled.div<{ $bgColor: string }>`
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: ${({ $bgColor }) => $bgColor};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  flex-shrink: 0;
+`;
+
+const StepNumberBadge = styled.div`
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+  color: white;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+`;
+
+const StepContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 `;
 
 const StepDescription = styled.p`
-  color: ${({ theme }) => theme.colors.secondaryDarker};
+  color: rgba(255, 255, 255, 0.95);
   font-size: ${({ theme }) => theme.fontSizes.sm};
   font-weight: 500;
-  line-height: 1.5;
-  opacity: 0.8;
+  line-height: 1.6;
   margin: 0;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 `;
 
 // Background ellipse images
@@ -122,9 +178,15 @@ const EllipseImage = styled(Image).withConfig({
 const MagneticCard = ({
   stepNumber,
   description,
+  icon,
+  gradient,
+  iconBg,
 }: {
   stepNumber: string;
   description: string;
+  icon: React.ReactNode;
+  gradient: string;
+  iconBg: string;
 }) => {
   const [transform, setTransform] = useState("translate(0px, 0px)");
   const cardRef = useRef<HTMLDivElement>(null);
@@ -150,10 +212,16 @@ const MagneticCard = ({
     <StepCard
       ref={cardRef}
       transform={transform}
+      $gradient={gradient}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
-      <StepNumber>{stepNumber}</StepNumber>
+      <StepHeader>
+        <StepIconContainer $bgColor={iconBg}>{icon}</StepIconContainer>
+        <StepContent>
+          <StepNumberBadge>{stepNumber}</StepNumberBadge>
+        </StepContent>
+      </StepHeader>
       <StepDescription>{description}</StepDescription>
     </StepCard>
   );
@@ -215,32 +283,50 @@ const HowItWork = () => {
         <StepsGrid>
           <MagneticCard
             stepNumber="Passo 01"
-            description="Descrevemos aqui o passo a passo da aplicação"
+            description="Escolha o plano que melhor se adapta às suas necessidades e faça sua assinatura para ter acesso completo à plataforma."
+            icon={<ShoppingCart size={28} color="white" />}
+            gradient="linear-gradient(135deg, #4a628a 0%, #7ab2d3 100%)"
+            iconBg="rgba(255, 255, 255, 0.2)"
           />
 
           <MagneticCard
             stepNumber="Passo 02"
-            description="Descrevemos aqui o passo a passo da aplicação"
+            description="Complete seu perfil com informações sobre idade, peso, altura e condição respiratória para personalizarmos sua experiência."
+            icon={<User size={28} color="white" />}
+            gradient="linear-gradient(135deg, #4a628a 0%, #7ab2d3 100%)"
+            iconBg="rgba(255, 255, 255, 0.2)"
           />
 
           <MagneticCard
             stepNumber="Passo 03"
-            description="Descrevemos aqui o passo a passo da aplicação"
+            description="Após completar o onboarding, você receberá automaticamente um plano de exercícios personalizado baseado no seu perfil."
+            icon={<Target size={28} color="white" />}
+            gradient="linear-gradient(135deg, #4a628a 0%, #7ab2d3 100%)"
+            iconBg="rgba(255, 255, 255, 0.2)"
           />
 
           <MagneticCard
             stepNumber="Passo 04"
-            description="Descrevemos aqui o passo a passo da aplicação"
+            description="Acesse seus exercícios diários, inicie os treinos seguindo as instruções e acompanhe seu progresso em tempo real."
+            icon={<Play size={28} color="white" />}
+            gradient="linear-gradient(135deg, #4a628a 0%, #7ab2d3 100%)"
+            iconBg="rgba(255, 255, 255, 0.2)"
           />
 
           <MagneticCard
             stepNumber="Passo 05"
-            description="Descrevemos aqui o passo a passo da aplicação"
+            description="Visualize seu progresso através de gráficos, estatísticas e relatórios detalhados sobre sua evolução na reabilitação."
+            icon={<TrendingUp size={28} color="white" />}
+            gradient="linear-gradient(135deg, #4a628a 0%, #7ab2d3 100%)"
+            iconBg="rgba(255, 255, 255, 0.2)"
           />
 
           <MagneticCard
             stepNumber="Passo 06"
-            description="Descrevemos aqui o passo a passo da aplicação"
+            description="Continue seguindo seu plano diário, complete os exercícios regularmente e mantenha-se comprometido com sua saúde respiratória."
+            icon={<Calendar size={28} color="white" />}
+            gradient="linear-gradient(135deg, #4a628a 0%, #7ab2d3 100%)"
+            iconBg="rgba(255, 255, 255, 0.2)"
           />
         </StepsGrid>
       </Container>

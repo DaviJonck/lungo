@@ -67,9 +67,15 @@ const Cards = styled.div`
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  justify-content: space-between;
+  justify-content: center;
+  align-items: stretch;
   width: 100%;
   gap: 2rem;
+
+  @media (min-width: ${({ theme }) => theme.breakpoints.md}) {
+    flex-wrap: nowrap;
+    justify-content: center;
+  }
 `;
 
 const Card = styled.article`
@@ -81,6 +87,14 @@ const Card = styled.article`
   min-height: 300px;
   border: 1px solid rgba(0, 0, 0, 0.06);
   transition: transform 160ms ease, box-shadow 160ms ease;
+  flex: 1;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+
+  @media (min-width: ${({ theme }) => theme.breakpoints.md}) {
+    max-width: 450px;
+  }
 
   &:hover {
     transform: translateY(-4px);
@@ -111,6 +125,9 @@ const Bio = styled.p`
   color: ${({ theme }) => theme.colors.textBlue};
   opacity: 0.9;
   margin: 0.5rem 0 0.75rem;
+  max-width: 100%;
+  line-height: 1.6;
+  flex: 1;
 `;
 
 const Actions = styled.div`
@@ -173,10 +190,15 @@ export default function TeamSection() {
 
         <Cards>
           <Card>
-            <Avatar src="/Gustavo.jpg" alt="Foto de Davi Jonck" />
+            <Avatar src="/Gustavo.jpg" alt="Foto de Gustavo Demétrio" />
             <Name>Gustavo Demétrio</Name>
-            <Role>Ceo Founder</Role>
-            <Bio>Exemplo de texto sobre o Gustavo e etc suas motivações</Bio>
+            <Role>CEO Founder</Role>
+            <Bio>
+              Mestre em Fisioterapia com paixão pela reabilitação respiratória.
+              Combinando conhecimento científico e experiência clínica para
+              criar soluções inovadoras que transformam vidas através da
+              tecnologia e do cuidado humanizado.
+            </Bio>
             <Actions>
               <IconLink href="#" aria-label="LinkedIn">
                 <Linkedin size={18} />
@@ -189,8 +211,13 @@ export default function TeamSection() {
           <Card>
             <Avatar src="/Davi.png" alt="Foto de Davi Jonck" />
             <Name>Davi Jonck</Name>
-            <Role>Ceo Founder</Role>
-            <Bio>Exemplo de texto sobre o Davi e etc suas motivações</Bio>
+            <Role>CEO Founder</Role>
+            <Bio>
+              Desenvolvedor apaixonado por tecnologia e inovação. Especialista
+              em criar plataformas digitais que unem o melhor da tecnologia
+              moderna com soluções práticas para melhorar a qualidade de vida e
+              o acesso à saúde respiratória.
+            </Bio>
             <Actions>
               <IconLink href="#" aria-label="LinkedIn">
                 <Linkedin size={18} />

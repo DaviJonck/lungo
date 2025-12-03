@@ -209,7 +209,7 @@ const WhatIsLungo = () => {
             <TextContent>
               <Subtitle>CUIDE DE VOCÊ</Subtitle>
               <Description>
-                LunGoé a primeira plataforma nacional focada em reabilitação
+                LunGo é a primeira plataforma nacional focada em reabilitação
                 pulmonar e no cuidado de doenças respiratórias. Aqui, pacientes
                 recebem planos personalizados realizados por profissionais e
                 acompanhamento da sua saúde.

@@ -355,7 +355,7 @@ const SubscribeButton = styled.button<{ $featured?: boolean }>`
 
 const pricingData = {
   basic: {
-    monthly: { price: 1.0, id: "plan_YAWZD79Ujsl0QE3l" },
+    monthly: { price: 29.9, id: "plan_YAWZD79Ujsl0QE3l" },
     semiannual: { price: 169.9, id: "plan_Dpa3gVQIjIpndokW" },
     annual: { price: 299.0, id: "plan_zBywjlkuZunA5nQP" },
   },

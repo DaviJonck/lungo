@@ -53,14 +53,6 @@ export default function Sidebar() {
             </NavItem>
           </li>
           <li>
-            <NavItem href="/dashboard/diary" $active={!!isDiaryActive}>
-              <NavItemIcon>
-                <NotebookPen size={18} />
-              </NavItemIcon>
-              Diário
-            </NavItem>
-          </li>
-          <li>
             <NavItem href="/dashboard/exercises" $active={!!isExercisesActive}>
               <NavItemIcon>
                 <Dumbbell size={18} />
@@ -69,7 +61,7 @@ export default function Sidebar() {
             </NavItem>
           </li>
           <li>
-            <NavItem href="#">
+            <NavItem href="/dashboard/learning" $active={!!isLearningActive}>
               <NavItemIcon>
                 <Book size={18} />
               </NavItemIcon>
@@ -161,13 +153,6 @@ export default function Sidebar() {
           active={isHomeActive}
         >
           <Home size={20} />
-        </BottomNavItem>
-        <BottomNavItem
-          href="/dashboard/diary"
-          aria-label="Diário"
-          active={!!isDiaryActive}
-        >
-          <NotebookPen size={20} />
         </BottomNavItem>
         <BottomNavItem
           href="/dashboard/exercises"

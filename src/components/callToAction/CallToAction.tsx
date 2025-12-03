@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 const Section = styled.section`
   background: linear-gradient(90deg, #dff2eb 0%, #b9e5e8 100%);
@@ -112,6 +113,7 @@ const Illustration = styled.div`
 `;
 
 const CallToAction = () => {
+  const router = useRouter();
   return (
     <Section>
       <Container>
@@ -124,7 +126,7 @@ const CallToAction = () => {
             Descubra como a reabilitação pulmonar com a LunGo pode transformar
             sua vida. Começe agora seu teste grátis!
           </Description>
-          <CtaButton>
+          <CtaButton onClick={() => router.push("/subscription")}>
             Melhorar qualidade de vida
             <span aria-hidden>→</span>
           </CtaButton>

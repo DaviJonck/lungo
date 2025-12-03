@@ -9,15 +9,13 @@ import {
   Search,
   Play,
   Clock,
-  Target,
+  Book,
   TrendingUp,
   Star,
   Loader2,
   X,
 } from "lucide-react";
 import { useExercises } from "@/hooks/useExercises";
-
-type Category = "todos" | "respiratorios" | "aerobicos" | "força";
 
 const PageContainer = styled.div`
   display: flex;
@@ -133,40 +131,6 @@ const FiltersRow = styled.div`
   }
 `;
 
-const Tab = styled.button<{ $active?: boolean }>`
-  border: 2px solid ${({ $active }) => ($active ? "#3b82f6" : "#e2e8f0")};
-  background: ${({ $active }) =>
-    $active ? "linear-gradient(135deg, #3b82f6 0%, #1e40af 100%)" : "#fff"};
-  color: ${({ $active }) => ($active ? "#fff" : "#475569")};
-  padding: 0.75rem 1.5rem;
-  border-radius: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: ${({ theme }) => theme.fonts.primary};
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  box-shadow: ${({ $active }) =>
-    $active
-      ? "0 4px 14px rgba(59, 130, 246, 0.3)"
-      : "0 2px 4px rgba(0, 0, 0, 0.05)"};
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    padding: 0.625rem 1.25rem;
-    font-size: 0.875rem;
-    justify-content: center;
-  }
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: ${({ $active }) =>
-      $active
-        ? "0 6px 20px rgba(59, 130, 246, 0.4)"
-        : "0 4px 12px rgba(0, 0, 0, 0.1)"};
-  }
-`;
-
 const SearchContainer = styled.div`
   position: relative;
   flex: 1;
@@ -213,7 +177,7 @@ const SearchIcon = styled.div`
   }
 `;
 
-const ExercisesGrid = styled.div`
+const LearningGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   gap: 1.5rem;
@@ -232,7 +196,7 @@ const ExercisesGrid = styled.div`
   }
 `;
 
-const ExerciseCard = styled.div`
+const LearningCard = styled.div`
   background: white;
   border-radius: 1.5rem;
   overflow: hidden;
@@ -299,18 +263,16 @@ const PlayButton = styled.div`
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
 
   &:hover {
-    background: white;
     transform: translate(-50%, -50%) scale(1.1);
+    background: rgba(255, 255, 255, 1);
   }
 `;
 
-const PlayIcon = styled.div`
-  width: 0;
-  height: 0;
-  border-left: 1rem solid #3b82f6;
-  border-top: 0.6rem solid transparent;
-  border-bottom: 0.6rem solid transparent;
-  margin-left: 0.2rem;
+const PlayIcon = styled(Play)`
+  width: 1.5rem;
+  height: 1.5rem;
+  color: #3b82f6;
+  margin-left: 0.25rem;
 `;
 
 const CardContent = styled.div`
@@ -318,9 +280,11 @@ const CardContent = styled.div`
   display: flex;
   flex-direction: column;
   flex: 1;
+  gap: 1rem;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
     padding: 1rem;
+    gap: 0.75rem;
   }
 `;
 
@@ -328,11 +292,7 @@ const CardHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 1rem;
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    margin-bottom: 0.75rem;
-  }
+  gap: 1rem;
 `;
 
 const CardTitle = styled.h3`
@@ -341,61 +301,35 @@ const CardTitle = styled.h3`
   color: #1e293b;
   margin: 0;
   line-height: 1.3;
+  flex: 1;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    font-size: 1.125rem;
-  }
-`;
-
-const CategoryBadge = styled.div<{ $category: Category }>`
-  padding: 0.25rem 0.75rem;
-  border-radius: 0.75rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  background: ${({ $category }) =>
-    $category === "respiratorios"
-      ? "linear-gradient(135deg, #3b82f6 0%, #1e40af 100%)"
-      : "linear-gradient(135deg, #10b981 0%, #059669 100%)"};
-  color: white;
-  margin-left: auto;
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    font-size: 0.625rem;
-    padding: 0.2rem 0.5rem;
+    font-size: 1.1rem;
   }
 `;
 
 const CardDescription = styled.p`
   color: #64748b;
   font-size: 0.875rem;
-  line-height: 1.5;
-  margin: 0 0 1.5rem 0;
-  flex: 1;
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    font-size: 0.8rem;
-    margin: 0 0 1rem 0;
-  }
+  line-height: 1.6;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 `;
 
 const CardFooter = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-top: 1.5rem;
-  border-top: 1px solid #f1f5f9;
   margin-top: auto;
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    padding-top: 1rem;
-  }
 `;
 
-const ExerciseStats = styled.div`
+const LearningStats = styled.div`
   display: flex;
   gap: 1rem;
+  flex-wrap: wrap;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
     gap: 0.75rem;
@@ -599,7 +533,7 @@ const ModalDescription = styled.p`
   margin: 0 0 1.5rem 0;
 `;
 
-const ExerciseInfo = styled.div`
+const LearningInfo = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1rem;
@@ -663,116 +597,87 @@ const ActionButton = styled.button<{ $variant?: "primary" | "secondary" }>`
       `}
 `;
 
-// Função para converter tipo do Supabase para categoria da UI
-const mapExerciseTypeToCategory = (type: string): Category => {
-  switch (type) {
-    case "RESPIRATORY":
-      return "respiratorios";
-    case "AEROBIC":
-      return "aerobicos";
-    case "STRENGTH":
-      return "força";
-    default:
-      return "respiratorios";
-  }
+// Função para obter URL de thumbnail
+const getThumbnailUrl = (): string => {
+  return "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800&q=70";
 };
 
-// Função para obter URL de thumbnail baseada no tipo
-const getThumbnailUrl = (type: string): string => {
-  switch (type) {
-    case "RESPIRATORY":
-      return "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&q=70";
-    case "AEROBIC":
-      return "https://images.unsplash.com/photo-1536012441664-1428b1b08083?w=800&q=70";
-    case "STRENGTH":
-      return "https://images.unsplash.com/photo-1509395176047-4a66953fd231?w=800&q=70";
-    default:
-      return "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&q=70";
-  }
-};
-
-interface ExerciseWithCategory {
+interface LearningContent {
   id: number;
   name: string;
   description?: string;
-  type: string;
   videoUrl?: string;
-  category: Category;
   thumbnailUrl: string;
 }
 
-export default function ExercisesPage() {
-  const [category, setCategory] = useState<Category>("todos");
+export default function LearningPage() {
   const [query, setQuery] = useState("");
-  const [selectedExercise, setSelectedExercise] =
-    useState<ExerciseWithCategory | null>(null);
+  const [selectedContent, setSelectedContent] =
+    useState<LearningContent | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const searchParams = useSearchParams();
 
-  // Buscar exercícios do banco de dados
+  // Buscar exercícios do banco de dados (por enquanto usando exercícios como conteúdo de aprendizado)
   const { exercises, loading, error, refetch } = useExercises();
 
-  // Converter exercícios do Supabase para formato da UI
-  const allExercises = useMemo(() => {
+  // Converter exercícios para formato de conteúdo de aprendizado
+  const allLearningContent = useMemo(() => {
     return exercises.map((exercise) => ({
-      ...exercise,
-      category: mapExerciseTypeToCategory(exercise.type),
-      thumbnailUrl: getThumbnailUrl(exercise.type),
+      id: exercise.id,
+      name: exercise.name,
+      description: exercise.description,
+      videoUrl: exercise.video_url,
+      thumbnailUrl: getThumbnailUrl(),
     }));
   }, [exercises]);
 
   const filtered = useMemo(() => {
-    const byCategory =
-      category === "todos"
-        ? allExercises
-        : allExercises.filter((e) => e.category === category);
-
-    if (!query.trim()) return byCategory;
+    if (!query.trim()) return allLearningContent;
     const q = query.trim().toLowerCase();
-    return byCategory.filter(
-      (e) =>
-        e.name.toLowerCase().includes(q) ||
-        (e.description && e.description.toLowerCase().includes(q))
+    return allLearningContent.filter(
+      (content) =>
+        content.name.toLowerCase().includes(q) ||
+        (content.description && content.description.toLowerCase().includes(q))
     );
-  }, [allExercises, category, query]);
+  }, [allLearningContent, query]);
 
-  const handleOpenModal = (exercise: ExerciseWithCategory) => {
-    setSelectedExercise(exercise);
+  const handleOpenModal = (content: LearningContent) => {
+    setSelectedContent(content);
     setIsModalOpen(true);
   };
 
   const handleCloseModal = () => {
-    setSelectedExercise(null);
+    setSelectedContent(null);
     setIsModalOpen(false);
   };
 
-  // Abrir modal automaticamente se houver exerciseId na query string
+  // Abrir modal automaticamente se houver contentId na query string
   useEffect(() => {
-    const exerciseIdParam = searchParams.get("exerciseId");
-    if (exerciseIdParam && allExercises.length > 0 && !isModalOpen) {
-      const exerciseToOpen = allExercises.find(
-        (e) => e.id === parseInt(exerciseIdParam)
+    const contentIdParam = searchParams.get("contentId");
+    if (contentIdParam && allLearningContent.length > 0 && !isModalOpen) {
+      const contentToOpen = allLearningContent.find(
+        (c) => c.id === parseInt(contentIdParam)
       );
-      if (exerciseToOpen) {
-        setSelectedExercise(exerciseToOpen);
+      if (contentToOpen) {
+        setSelectedContent(contentToOpen);
         setIsModalOpen(true);
       }
     }
-  }, [searchParams, allExercises, isModalOpen]);
+  }, [searchParams, allLearningContent, isModalOpen]);
 
   return (
     <>
-      <DashboardHeader title="Exercícios" />
+      <DashboardHeader title="Aprendendo" />
       <PageContainer>
         <Header>
           <StatsRow>
             <StatCard>
               <StatIcon>
-                <Target size={20} />
+                <Book size={20} />
               </StatIcon>
               <StatContent>
                 <StatValue>{filtered.length}</StatValue>
-                <StatLabel>Exercícios Disponíveis</StatLabel>
+                <StatLabel>Conteúdos Disponíveis</StatLabel>
               </StatContent>
             </StatCard>
             <StatCard>
@@ -780,8 +685,8 @@ export default function ExercisesPage() {
                 <TrendingUp size={20} />
               </StatIcon>
               <StatContent>
-                <StatValue>12</StatValue>
-                <StatLabel>Completados Esta Semana</StatLabel>
+                <StatValue>8</StatValue>
+                <StatLabel>Assistidos Esta Semana</StatLabel>
               </StatContent>
             </StatCard>
             <StatCard>
@@ -789,47 +694,19 @@ export default function ExercisesPage() {
                 <Star size={20} />
               </StatIcon>
               <StatContent>
-                <StatValue>4.8</StatValue>
+                <StatValue>4.9</StatValue>
                 <StatLabel>Avaliação Média</StatLabel>
               </StatContent>
             </StatCard>
           </StatsRow>
 
           <FiltersRow>
-            <Tab
-              $active={category === "todos"}
-              onClick={() => setCategory("todos")}
-            >
-              <Star size={16} />
-              Todos
-            </Tab>
-            <Tab
-              $active={category === "respiratorios"}
-              onClick={() => setCategory("respiratorios")}
-            >
-              <Target size={16} />
-              Respiratórios
-            </Tab>
-            <Tab
-              $active={category === "força"}
-              onClick={() => setCategory("força")}
-            >
-              <Target size={16} />
-              Força
-            </Tab>
-            <Tab
-              $active={category === "aerobicos"}
-              onClick={() => setCategory("aerobicos")}
-            >
-              <TrendingUp size={16} />
-              Aeróbicos
-            </Tab>
             <SearchContainer>
               <SearchIcon>
                 <Search size={20} />
               </SearchIcon>
               <SearchInput
-                placeholder="Pesquisar exercícios..."
+                placeholder="Pesquisar conteúdos..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
               />
@@ -842,19 +719,19 @@ export default function ExercisesPage() {
             {loading ? (
               <LoadingContainer>
                 <Loader2 size={48} className="animate-spin" color="#3b82f6" />
-                <LoadingText>Carregando exercícios...</LoadingText>
+                <LoadingText>Carregando conteúdos...</LoadingText>
               </LoadingContainer>
             ) : error ? (
               <ErrorContainer>
-                <ErrorText>Erro ao carregar exercícios: {error}</ErrorText>
+                <ErrorText>Erro ao carregar conteúdos: {error}</ErrorText>
                 <RetryButton onClick={refetch}>Tentar Novamente</RetryButton>
               </ErrorContainer>
             ) : filtered.length === 0 ? (
               <ErrorContainer>
                 <ErrorText>
                   {query.trim()
-                    ? `Nenhum exercício encontrado para "${query}"`
-                    : `Nenhum exercício disponível na categoria ${category}`}
+                    ? `Nenhum conteúdo encontrado para "${query}"`
+                    : "Nenhum conteúdo disponível"}
                 </ErrorText>
                 {query.trim() && (
                   <RetryButton onClick={() => setQuery("")}>
@@ -863,55 +740,51 @@ export default function ExercisesPage() {
                 )}
               </ErrorContainer>
             ) : (
-              <ExercisesGrid>
-                {filtered.map((ex) => (
-                  <ExerciseCard key={ex.id} onClick={() => handleOpenModal(ex)}>
-                    <CardImage $src={ex.thumbnailUrl}>
+              <LearningGrid>
+                {filtered.map((content) => (
+                  <LearningCard
+                    key={content.id}
+                    onClick={() => handleOpenModal(content)}
+                  >
+                    <CardImage $src={content.thumbnailUrl}>
                       <PlayButton>
                         <PlayIcon />
                       </PlayButton>
                     </CardImage>
                     <CardContent>
                       <CardHeader>
-                        <CardTitle>{ex.name}</CardTitle>
-                        <CategoryBadge $category={ex.category}>
-                          {ex.category === "respiratorios"
-                            ? "Respiratório"
-                            : ex.category === "força"
-                            ? "Força"
-                            : "Aeróbico"}
-                        </CategoryBadge>
+                        <CardTitle>{content.name}</CardTitle>
                       </CardHeader>
                       <CardDescription>
-                        {ex.description || "Descrição não disponível"}
+                        {content.description || "Descrição não disponível"}
                       </CardDescription>
                       <CardFooter>
-                        <ExerciseStats>
+                        <LearningStats>
                           <Stat>
                             <Clock size={16} />
                             15 min
                           </Stat>
                           <Stat>
-                            <Target size={16} />
-                            Intermediário
+                            <Book size={16} />
+                            Educativo
                           </Stat>
-                        </ExerciseStats>
+                        </LearningStats>
                       </CardFooter>
                       <StartButton>
                         <Play size={16} />
-                        Ver Detalhes
+                        Ver Conteúdo
                       </StartButton>
                     </CardContent>
-                  </ExerciseCard>
+                  </LearningCard>
                 ))}
-              </ExercisesGrid>
+              </LearningGrid>
             )}
           </ScrollArea>
         </Card>
       </PageContainer>
 
-      {/* Modal de Detalhes do Exercício */}
-      {isModalOpen && selectedExercise && (
+      {/* Modal de Detalhes do Conteúdo */}
+      {isModalOpen && selectedContent && (
         <ModalOverlay onClick={handleCloseModal}>
           <ModalContent onClick={(e) => e.stopPropagation()}>
             <CloseButton onClick={handleCloseModal}>
@@ -919,9 +792,9 @@ export default function ExercisesPage() {
             </CloseButton>
 
             <VideoContainer>
-              {selectedExercise.videoUrl ? (
-                <Video controls poster={selectedExercise.thumbnailUrl}>
-                  <source src={selectedExercise.videoUrl} type="video/mp4" />
+              {selectedContent.videoUrl ? (
+                <Video controls poster={selectedContent.thumbnailUrl}>
+                  <source src={selectedContent.videoUrl} type="video/mp4" />
                   Seu navegador não suporta vídeos HTML5.
                 </Video>
               ) : (
@@ -939,35 +812,24 @@ export default function ExercisesPage() {
             </VideoContainer>
 
             <ModalBody>
-              <ModalTitle>{selectedExercise.name}</ModalTitle>
+              <ModalTitle>{selectedContent.name}</ModalTitle>
 
               <ModalDescription>
-                {selectedExercise.description ||
-                  "Descrição não disponível para este exercício."}
+                {selectedContent.description ||
+                  "Descrição não disponível para este conteúdo."}
               </ModalDescription>
 
-              <ExerciseInfo>
-                <InfoCard>
-                  <InfoLabel>Tipo</InfoLabel>
-                  <InfoValue>
-                    {selectedExercise.category === "respiratorios"
-                      ? "Respiratório"
-                      : selectedExercise.category === "força"
-                      ? "Força"
-                      : "Aeróbico"}
-                  </InfoValue>
-                </InfoCard>
-
+              <LearningInfo>
                 <InfoCard>
                   <InfoLabel>Duração</InfoLabel>
                   <InfoValue>15 minutos</InfoValue>
                 </InfoCard>
 
                 <InfoCard>
-                  <InfoLabel>Nível</InfoLabel>
-                  <InfoValue>Intermediário</InfoValue>
+                  <InfoLabel>Tipo</InfoLabel>
+                  <InfoValue>Educativo</InfoValue>
                 </InfoCard>
-              </ExerciseInfo>
+              </LearningInfo>
 
               <ModalActions>
                 <ActionButton $variant="secondary" onClick={handleCloseModal}>
@@ -976,13 +838,12 @@ export default function ExercisesPage() {
                 <ActionButton
                   $variant="primary"
                   onClick={() => {
-                    // Aqui você pode implementar a lógica para iniciar o exercício
-                    console.log("Iniciar exercício:", selectedExercise.name);
+                    console.log("Assistir conteúdo:", selectedContent.name);
                     handleCloseModal();
                   }}
                 >
                   <Play size={16} style={{ marginRight: "0.5rem" }} />
-                  Iniciar Exercício
+                  Assistir Conteúdo
                 </ActionButton>
               </ModalActions>
             </ModalBody>
