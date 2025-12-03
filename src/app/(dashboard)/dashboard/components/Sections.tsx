@@ -909,6 +909,7 @@ export function RemindersAndActivities({ userData }: SectionsProps) {
 
     return () => {
       // Copiar referência para evitar problemas com cleanup
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       const currentTimers = { ...timersRef.current };
       Object.values(currentTimers).forEach((timer) => {
         if (timer) clearInterval(timer);
@@ -918,6 +919,7 @@ export function RemindersAndActivities({ userData }: SectionsProps) {
 
   // Handler para modal (apenas visualização)
   const handleCompleteExercise = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async (_exerciseId: string, _data: Record<string, string>) => {
       // Este handler é usado apenas quando o modal é usado para visualização
       // A lógica principal está em handleBorgRating

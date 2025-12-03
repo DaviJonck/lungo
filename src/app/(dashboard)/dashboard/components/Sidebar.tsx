@@ -11,15 +11,7 @@ import {
   BottomNavItem,
   NavItemIcon,
 } from "../styles";
-import {
-  Home,
-  NotebookPen,
-  Dumbbell,
-  Book,
-  User,
-  Crown,
-  CheckCircle,
-} from "lucide-react";
+import { Home, Dumbbell, Book, User, CheckCircle } from "lucide-react";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -33,7 +25,6 @@ export default function Sidebar() {
   const { hasActivePlan } = useUserPlanStatus(userData?.id || "");
 
   const isHomeActive = pathname === "/dashboard" || pathname === "/";
-  const isDiaryActive = pathname?.startsWith("/dashboard/diary");
   const isExercisesActive = pathname?.startsWith("/dashboard/exercises");
   const isLearningActive = pathname?.startsWith("/dashboard/learning");
   const isProfileActive = pathname?.startsWith("/dashboard/profile");

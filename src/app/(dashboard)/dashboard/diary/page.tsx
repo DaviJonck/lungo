@@ -42,12 +42,6 @@ import {
   Clock,
   CheckCircle,
   AlertCircle,
-  Trophy,
-  Star,
-  Flame,
-  Target,
-  Crown,
-  Users,
 } from "lucide-react";
 import DashboardHeader from "../components/DashboardHeader";
 
@@ -68,34 +62,6 @@ type DiaryEntry = {
   symptoms: string[];
   points: number;
   achievements: string[];
-};
-
-type UserLevel = {
-  level: number;
-  title: string;
-  icon: React.ReactNode;
-  color: string;
-  nextLevelPoints: number;
-  currentPoints: number;
-  progress: number;
-};
-
-type Achievement = {
-  id: string;
-  title: string;
-  description: string;
-  icon: React.ReactNode;
-  color: string;
-  unlocked: boolean;
-  points: number;
-  category: "streak" | "exercise" | "health" | "social";
-};
-
-type StreakData = {
-  current: number;
-  longest: number;
-  lastExercise: string;
-  nextMilestone: number;
 };
 
 export default function DiaryPage() {

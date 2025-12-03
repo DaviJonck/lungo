@@ -1,24 +1,25 @@
-import { useRef, useCallback } from "react";
+import { useCallback } from "react";
 
 // Cache simples em memória para evitar chamadas duplicadas
-const cache = new Map<
-  string,
-  { data: any; timestamp: number; promise?: Promise<any> }
->();
+interface CacheEntry<T = unknown> {
+  data: T | null;
+  timestamp: number;
+  promise?: Promise<T>;
+}
+
+const cache = new Map<string, CacheEntry>();
 const CACHE_DURATION = 30000; // 30 segundos
 
 export function useSupabaseCache() {
-  const cacheKeyRef = useRef<string>("");
-
-  const getCachedData = useCallback((key: string) => {
+  const getCachedData = useCallback(<T = unknown>(key: string): T | null => {
     const cached = cache.get(key);
     if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
-      return cached.data;
+      return cached.data as T | null;
     }
     return null;
   }, []);
 
-  const setCachedData = useCallback((key: string, data: any) => {
+  const setCachedData = useCallback(<T = unknown>(key: string, data: T) => {
     cache.set(key, {
       data,
       timestamp: Date.now(),
@@ -26,17 +27,17 @@ export function useSupabaseCache() {
   }, []);
 
   const getOrSetCache = useCallback(
-    async (key: string, fetchFn: () => Promise<any>) => {
+    async <T = unknown>(key: string, fetchFn: () => Promise<T>): Promise<T> => {
       // Verificar se já existe uma promise em andamento
       const cached = cache.get(key);
       if (cached?.promise) {
         console.log(`🔄 Reutilizando promise em cache para: ${key}`);
-        return await cached.promise;
+        return (await cached.promise) as Promise<T>;
       }
 
       // Verificar se existe dados válidos no cache
-      const cachedData = getCachedData(key);
-      if (cachedData) {
+      const cachedData = getCachedData<T>(key);
+      if (cachedData !== null) {
         console.log(`💾 Dados encontrados no cache para: ${key}`);
         return cachedData;
       }
@@ -49,7 +50,7 @@ export function useSupabaseCache() {
         data: null,
         timestamp: Date.now(),
         promise,
-      });
+      } as CacheEntry<T>);
 
       try {
         const result = await promise;
@@ -75,7 +76,15 @@ export function useSupabaseCache() {
   }, []);
 
   const getCacheInfo = useCallback(() => {
-    const info: Record<string, any> = {};
+    const info: Record<
+      string,
+      {
+        hasData: boolean;
+        hasPromise: boolean;
+        age: number;
+        isValid: boolean;
+      }
+    > = {};
     cache.forEach((value, key) => {
       info[key] = {
         hasData: !!value.data,
