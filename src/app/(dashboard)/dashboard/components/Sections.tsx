@@ -830,7 +830,7 @@ export function RemindersAndActivities({ userData }: SectionsProps) {
             exercise.id,
             exerciseType === "RESPIRATORY"
               ? {}
-              : { perceived_difficulty: rating.toString() }
+              : { perceived_difficulty: rating }
           );
           setToast(`Parabéns! Você concluiu: ${exercise.title}`);
           setTimeout(() => setToast(null), 3000);
