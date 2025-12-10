@@ -63,7 +63,11 @@ export async function testCompletionStatus(patientId: string) {
 
 // Adicionar ao window para teste no console
 if (typeof window !== "undefined") {
-  (window as any).testCompletionStatus = testCompletionStatus;
+  interface WindowWithTestCompletionStatus extends Window {
+    testCompletionStatus: typeof testCompletionStatus;
+  }
+  (window as WindowWithTestCompletionStatus).testCompletionStatus =
+    testCompletionStatus;
 
   console.log(`
 🧪 Teste de Status de Conclusão disponível:

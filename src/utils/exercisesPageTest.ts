@@ -52,7 +52,10 @@ export async function testExercisesPage() {
 
 // Adicionar ao window para teste no console
 if (typeof window !== "undefined") {
-  (window as any).testExercisesPage = testExercisesPage;
+  interface WindowWithTestExercisesPage extends Window {
+    testExercisesPage: typeof testExercisesPage;
+  }
+  (window as WindowWithTestExercisesPage).testExercisesPage = testExercisesPage;
 
   console.log(`
 🧪 Teste da Página de Exercícios disponível:

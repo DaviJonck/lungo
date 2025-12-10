@@ -50,7 +50,10 @@ export async function testExerciseModal() {
 
 // Adicionar ao window para teste no console
 if (typeof window !== "undefined") {
-  (window as any).testExerciseModal = testExerciseModal;
+  interface WindowWithTestExerciseModal extends Window {
+    testExerciseModal: typeof testExerciseModal;
+  }
+  (window as WindowWithTestExerciseModal).testExerciseModal = testExerciseModal;
 
   console.log(`
 🧪 Teste do Modal de Exercícios disponível:

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { CheckCircle, ArrowRight, Heart, Star } from "lucide-react";
+import { CheckCircle, ArrowRight } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { theme } from "@/styles/theme";
 
@@ -157,39 +157,6 @@ const Button = styled.button`
 
   &:active {
     transform: translateY(0);
-  }
-`;
-
-const DecorativeElements = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  pointer-events: none;
-  z-index: 1;
-`;
-
-const FloatingIcon = styled.div<{
-  $top: string;
-  $left: string;
-  $delay: string;
-}>`
-  position: absolute;
-  top: ${({ $top }) => $top};
-  left: ${({ $left }) => $left};
-  color: ${theme.colors.secondary}30;
-  animation: float 6s ease-in-out infinite;
-  animation-delay: ${({ $delay }) => $delay};
-
-  @keyframes float {
-    0%,
-    100% {
-      transform: translateY(0px) rotate(0deg);
-    }
-    50% {
-      transform: translateY(-20px) rotate(180deg);
-    }
   }
 `;
 

@@ -5,14 +5,22 @@ import {
   generateExerciseSummary,
   addCompletionStatusToExercises,
 } from "@/utils/exerciseUtils";
-import { TodayExercise, PatientPlan } from "@/types/supabase";
+import {
+  TodayExercise,
+  PatientPlan,
+  Exercise,
+  ExerciseCompletionData,
+} from "@/types/supabase";
 import { useSupabaseCache } from "./useSupabaseCache";
 
 interface DashboardData {
   activePlan: PatientPlan | null;
   todayExercises: TodayExercise[];
-  allExercises: any[];
-  completedToday: any[];
+  allExercises: Exercise[];
+  completedToday: Array<{
+    exercise_id: number;
+    scheduled_exercise_id?: number;
+  }>;
   loading: boolean;
   error: string | null;
   summary: {
@@ -201,14 +209,19 @@ export function useExerciseCompletion() {
   const [completedExercises, setCompletedExercises] = useState<
     Record<string, boolean>
   >({});
-  const [completionData, setCompletionData] = useState<Record<string, any>>({});
+  const [completionData, setCompletionData] = useState<
+    Record<string, ExerciseCompletionData>
+  >({});
 
-  const markExerciseComplete = useCallback((exerciseId: string, data?: any) => {
-    setCompletedExercises((prev) => ({ ...prev, [exerciseId]: true }));
-    if (data) {
-      setCompletionData((prev) => ({ ...prev, [exerciseId]: data }));
-    }
-  }, []);
+  const markExerciseComplete = useCallback(
+    (exerciseId: string, data?: ExerciseCompletionData) => {
+      setCompletedExercises((prev) => ({ ...prev, [exerciseId]: true }));
+      if (data) {
+        setCompletionData((prev) => ({ ...prev, [exerciseId]: data }));
+      }
+    },
+    []
+  );
 
   const markExerciseIncomplete = useCallback((exerciseId: string) => {
     setCompletedExercises((prev) => {

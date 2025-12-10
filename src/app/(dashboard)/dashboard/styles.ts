@@ -261,6 +261,7 @@ export const CardDashboard = styled.div`
   padding: 14px;
   min-height: 120px;
   overflow-y: hidden;
+  margin-bottom: 1rem;
 `;
 // New: Hero greeting card and progress
 export const HeroCard = styled.div`

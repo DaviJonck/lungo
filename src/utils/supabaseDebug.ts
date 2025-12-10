@@ -9,7 +9,19 @@ import {
 
 // Função global para testar no console - APENAS EM DESENVOLVIMENTO
 if (process.env.NODE_ENV === "development") {
-  (window as any).testSupabase = {
+  interface WindowWithTestSupabase extends Window {
+    testSupabase: {
+      connection: typeof testSupabaseConnection;
+      patient: (patientId: string) => ReturnType<typeof testPatientData>;
+      query: (
+        patientId: string,
+        dayOfWeek?: number
+      ) => ReturnType<typeof testScheduledExercisesQuery>;
+      testProblematicPatient: () => ReturnType<typeof testPatientData>;
+      testProblematicQuery: () => ReturnType<typeof testScheduledExercisesQuery>;
+    };
+  }
+  (window as WindowWithTestSupabase).testSupabase = {
     // Testar conexão geral
     connection: testSupabaseConnection,
 

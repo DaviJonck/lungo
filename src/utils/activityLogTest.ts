@@ -85,7 +85,15 @@ export async function testCompleteActivityFlow(patientId: string) {
 
 // Adicionar ao window para teste no console
 if (typeof window !== "undefined") {
-  (window as any).testActivityLogs = {
+  interface WindowWithTestActivityLogs extends Window {
+    testActivityLogs: {
+      create: typeof testActivityLogCreation;
+      retrieve: typeof testActivityLogRetrieval;
+      today: typeof testTodayActivities;
+      fullFlow: typeof testCompleteActivityFlow;
+    };
+  }
+  (window as WindowWithTestActivityLogs).testActivityLogs = {
     create: testActivityLogCreation,
     retrieve: testActivityLogRetrieval,
     today: testTodayActivities,

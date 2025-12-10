@@ -113,8 +113,14 @@ export function testModalAtScreenSize(width: number) {
 
 // Adicionar ao window para teste no console - APENAS EM DESENVOLVIMENTO
 if (typeof window !== "undefined" && process.env.NODE_ENV === "development") {
-  (window as any).testModalResponsive = testModalResponsive;
-  (window as any).testModalAtScreenSize = testModalAtScreenSize;
+  interface WindowWithTestModalResponsive extends Window {
+    testModalResponsive: typeof testModalResponsive;
+    testModalAtScreenSize: typeof testModalAtScreenSize;
+  }
+  (window as WindowWithTestModalResponsive).testModalResponsive =
+    testModalResponsive;
+  (window as WindowWithTestModalResponsive).testModalAtScreenSize =
+    testModalAtScreenSize;
 
   console.log(`
 📱 Testes de Responsividade do Modal disponíveis (APENAS DESENVOLVIMENTO):

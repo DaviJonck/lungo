@@ -5,7 +5,6 @@ import {
   TemplateExercise,
   PatientPlan,
   ScheduledExercise,
-  ExerciseWithDetails,
   PatientPlanWithExercises,
   ExerciseFilters,
   PatientPlanFilters,

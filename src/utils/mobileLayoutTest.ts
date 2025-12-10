@@ -103,8 +103,12 @@ export function simulateScreenSize(width: number) {
 
 // Adicionar ao window para teste no console - APENAS EM DESENVOLVIMENTO
 if (typeof window !== "undefined" && process.env.NODE_ENV === "development") {
-  (window as any).testMobileLayout = testMobileLayout;
-  (window as any).simulateScreenSize = simulateScreenSize;
+  interface WindowWithTestMobileLayout extends Window {
+    testMobileLayout: typeof testMobileLayout;
+    simulateScreenSize: typeof simulateScreenSize;
+  }
+  (window as WindowWithTestMobileLayout).testMobileLayout = testMobileLayout;
+  (window as WindowWithTestMobileLayout).simulateScreenSize = simulateScreenSize;
 
   console.log(`
 📱 Testes de Layout Mobile disponíveis (APENAS DESENVOLVIMENTO):

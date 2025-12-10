@@ -39,7 +39,10 @@ export async function testPlanStatus(patientId: string) {
 
 // Adicionar ao window para teste no console
 if (typeof window !== "undefined") {
-  (window as any).testPlanStatus = testPlanStatus;
+  interface WindowWithTestPlanStatus extends Window {
+    testPlanStatus: typeof testPlanStatus;
+  }
+  (window as WindowWithTestPlanStatus).testPlanStatus = testPlanStatus;
 
   console.log(`
 🧪 Teste de Status do Plano disponível:

@@ -598,7 +598,7 @@ export function SummaryCards({ userData }: SectionsProps) {
   }, []);
 
   return (
-    <>
+    <div style={{ marginBottom: 20 }}>
       <HeroCard>
         <div style={{ fontSize: 22, fontWeight: 800 }}>
           Olá, {userData?.name || "Usuário"}!
@@ -674,7 +674,7 @@ export function SummaryCards({ userData }: SectionsProps) {
           </div>
         </MetricCard>
       </CardsGrid>
-    </>
+    </div>
   );
 }
 

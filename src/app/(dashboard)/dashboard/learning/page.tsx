@@ -835,16 +835,6 @@ export default function LearningPage() {
                 <ActionButton $variant="secondary" onClick={handleCloseModal}>
                   Fechar
                 </ActionButton>
-                <ActionButton
-                  $variant="primary"
-                  onClick={() => {
-                    console.log("Assistir conteúdo:", selectedContent.name);
-                    handleCloseModal();
-                  }}
-                >
-                  <Play size={16} style={{ marginRight: "0.5rem" }} />
-                  Assistir Conteúdo
-                </ActionButton>
               </ModalActions>
             </ModalBody>
           </ModalContent>
