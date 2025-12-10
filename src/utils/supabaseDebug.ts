@@ -18,10 +18,12 @@ if (process.env.NODE_ENV === "development") {
         dayOfWeek?: number
       ) => ReturnType<typeof testScheduledExercisesQuery>;
       testProblematicPatient: () => ReturnType<typeof testPatientData>;
-      testProblematicQuery: () => ReturnType<typeof testScheduledExercisesQuery>;
+      testProblematicQuery: () => ReturnType<
+        typeof testScheduledExercisesQuery
+      >;
     };
   }
-  (window as WindowWithTestSupabase).testSupabase = {
+  (window as unknown as WindowWithTestSupabase).testSupabase = {
     // Testar conexão geral
     connection: testSupabaseConnection,
 

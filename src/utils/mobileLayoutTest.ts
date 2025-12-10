@@ -107,8 +107,10 @@ if (typeof window !== "undefined" && process.env.NODE_ENV === "development") {
     testMobileLayout: typeof testMobileLayout;
     simulateScreenSize: typeof simulateScreenSize;
   }
-  (window as WindowWithTestMobileLayout).testMobileLayout = testMobileLayout;
-  (window as WindowWithTestMobileLayout).simulateScreenSize = simulateScreenSize;
+  (window as unknown as WindowWithTestMobileLayout).testMobileLayout =
+    testMobileLayout;
+  (window as unknown as WindowWithTestMobileLayout).simulateScreenSize =
+    simulateScreenSize;
 
   console.log(`
 📱 Testes de Layout Mobile disponíveis (APENAS DESENVOLVIMENTO):

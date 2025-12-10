@@ -42,7 +42,8 @@ if (typeof window !== "undefined") {
   interface WindowWithTestPlanStatus extends Window {
     testPlanStatus: typeof testPlanStatus;
   }
-  (window as WindowWithTestPlanStatus).testPlanStatus = testPlanStatus;
+  (window as unknown as WindowWithTestPlanStatus).testPlanStatus =
+    testPlanStatus;
 
   console.log(`
 🧪 Teste de Status do Plano disponível:

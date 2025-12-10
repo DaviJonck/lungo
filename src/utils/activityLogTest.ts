@@ -93,7 +93,7 @@ if (typeof window !== "undefined") {
       fullFlow: typeof testCompleteActivityFlow;
     };
   }
-  (window as WindowWithTestActivityLogs).testActivityLogs = {
+  (window as unknown as WindowWithTestActivityLogs).testActivityLogs = {
     create: testActivityLogCreation,
     retrieve: testActivityLogRetrieval,
     today: testTodayActivities,

@@ -55,7 +55,8 @@ if (typeof window !== "undefined") {
   interface WindowWithTestExercisesPage extends Window {
     testExercisesPage: typeof testExercisesPage;
   }
-  (window as WindowWithTestExercisesPage).testExercisesPage = testExercisesPage;
+  (window as unknown as WindowWithTestExercisesPage).testExercisesPage =
+    testExercisesPage;
 
   console.log(`
 🧪 Teste da Página de Exercícios disponível:

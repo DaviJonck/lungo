@@ -53,7 +53,8 @@ if (typeof window !== "undefined") {
   interface WindowWithTestExerciseModal extends Window {
     testExerciseModal: typeof testExerciseModal;
   }
-  (window as WindowWithTestExerciseModal).testExerciseModal = testExerciseModal;
+  (window as unknown as WindowWithTestExerciseModal).testExerciseModal =
+    testExerciseModal;
 
   console.log(`
 🧪 Teste do Modal de Exercícios disponível:

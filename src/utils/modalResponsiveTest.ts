@@ -117,9 +117,9 @@ if (typeof window !== "undefined" && process.env.NODE_ENV === "development") {
     testModalResponsive: typeof testModalResponsive;
     testModalAtScreenSize: typeof testModalAtScreenSize;
   }
-  (window as WindowWithTestModalResponsive).testModalResponsive =
+  (window as unknown as WindowWithTestModalResponsive).testModalResponsive =
     testModalResponsive;
-  (window as WindowWithTestModalResponsive).testModalAtScreenSize =
+  (window as unknown as WindowWithTestModalResponsive).testModalAtScreenSize =
     testModalAtScreenSize;
 
   console.log(`
