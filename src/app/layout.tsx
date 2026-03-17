@@ -2,6 +2,7 @@ import { Nunito_Sans } from "next/font/google";
 import ThemeProvider from "../components/ThemeProvider";
 import { AuthProvider } from "../contexts/AuthContext";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/next";
 
 import "./globals.css";
 
@@ -29,6 +30,7 @@ export default function RootLayout({
         <ThemeProvider>
           <AuthProvider>
             <SpeedInsights />
+            <Analytics />
             {children}
           </AuthProvider>
         </ThemeProvider>
